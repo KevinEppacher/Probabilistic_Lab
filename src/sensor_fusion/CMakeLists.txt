@@ -10,16 +10,12 @@ project(sensor_fusion)
 find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   nav_msgs
-  robot_localization
   roscpp
   rospy
-  sensor_fusion_msgs
   sensor_msgs
   std_msgs
   tf
   tf2
-  turltebot3_msgs
-  turtlebot3_navigation
 )
 
 ## System dependencies are found with CMake's conventions
