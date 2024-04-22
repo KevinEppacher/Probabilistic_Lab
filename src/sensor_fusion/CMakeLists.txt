@@ -209,3 +209,12 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+
+add_executable(main src/main.cpp src/Localization.cpp)
+
+target_link_libraries(main
+  ${catkin_LIBRARIES}
+)
+
+add_dependencies(main ${sensor_fusion_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
