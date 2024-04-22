@@ -2,3 +2,15 @@ xhost +local:
 
 Turtlebot Keyboard Control:
 roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+Git:
+
+git add .
+
+git commit -m "Was geändert wurde"
+
+git push
+
+git checkout -b particle_filter
+
+git push -u origin particle_filter

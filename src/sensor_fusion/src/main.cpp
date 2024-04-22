@@ -1,4 +1,3 @@
-// main.cpp
 #include "ros/ros.h"
 #include "Localization.h"
 
@@ -7,15 +6,22 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
 
     Localization localization;
+    ros::Rate loop_rate(10);
 
-    ros::Rate loop_rate(10);  // Set the frequency to 10 Hz
+    ParticleFilter particleFilter(100); // Now providing a default quantity of particles
+    State robotState(0, 0, 0);
 
-    while (ros::ok()) {
-        ros::spinOnce();  // Handle ROS callbacks
+    auto particles = particleFilter.initializeParticles(robotState);
+
+    while (ros::ok()) 
+    {
+
+
+
 
         
-
-        loop_rate.sleep();  // Warte, um die Loop-Rate einzuhalten
+        ros::spinOnce();
+        loop_rate.sleep();
     }
 
     return 0;
