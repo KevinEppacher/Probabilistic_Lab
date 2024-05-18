@@ -14,3 +14,7 @@ git push
 git checkout -b particle_filter
 
 git push -u origin particle_filter
+
+Terminal Commands:
+
+roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch

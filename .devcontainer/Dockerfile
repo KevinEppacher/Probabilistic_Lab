@@ -21,7 +21,7 @@ RUN sudo usermod --append --groups video $USERNAME
 RUN sudo apt update && sudo apt upgrade -y
 
 RUN sudo apt-get install -y ros-noetic-turtlebot3* ros-noetic-turtlebot3 \
-    && echo "export TURTLEBOT3_MODEL=waffle" >> ~/.bashrc
+    && echo "export TURTLEBOT3_MODEL=burger" >> ~/.bashrc
 
 
 # Install Git
