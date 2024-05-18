@@ -1,3 +1,49 @@
+<!-- This XML file is a launch file used for launching various nodes and configurations for the sensor fusion module.
+It includes the following components:
+- Gazebo world creation using the empty_world.launch file from the gazebo_ros package.
+- Spawning a URDF model of the turtlebot3_burger robot in Gazebo.
+- Launching the turtlebot3_remote.launch file from the turtlebot3_bringup package.
+- Starting the map_server node to provide the map for localization.
+- Running the amcl node for adaptive Monte Carlo localization.
+
+The amcl node is configured with various parameters for particle filtering and sensor models. These parameters include:
+- min_particles: The minimum number of particles in the filter.
+- max_particles: The maximum number of particles in the filter.
+- kld_err: The error threshold for adaptive resampling.
+- update_min_d: The minimum distance required for a sensor update.
+- update_min_a: The minimum angle required for a sensor update.
+- resample_interval: The interval at which resampling is performed.
+- transform_tolerance: The tolerance for transform updates.
+- recovery_alpha_slow: The recovery parameter for slow recovery.
+- recovery_alpha_fast: The recovery parameter for fast recovery.
+- initial_pose_x: The initial x-coordinate of the robot's pose.
+- initial_pose_y: The initial y-coordinate of the robot's pose.
+- initial_pose_a: The initial orientation of the robot's pose.
+- gui_publish_rate: The rate at which GUI updates are published.
+
+The amcl node also has parameters for laser sensor model and odometry model. These parameters include:
+- laser_max_range: The maximum range of the laser sensor.
+- laser_max_beams: The maximum number of beams in the laser scan.
+- laser_z_hit: The weight for hits in the laser scan.
+- laser_z_short: The weight for short readings in the laser scan.
+- laser_z_max: The weight for maximum range readings in the laser scan.
+- laser_z_rand: The weight for random measurements in the laser scan.
+- laser_sigma_hit: The standard deviation for hits in the laser scan.
+- laser_lambda_short: The decay rate for short readings in the laser scan.
+- laser_likelihood_max_dist: The maximum distance for likelihood field model.
+- laser_model_type: The type of laser sensor model to use.
+- odom_model_type: The type of odometry model to use.
+- odom_alpha1: The noise parameter for odometry model.
+- odom_alpha2: The noise parameter for odometry model.
+- odom_alpha3: The noise parameter for odometry model.
+- odom_alpha4: The noise parameter for odometry model.
+- odom_frame_id: The frame ID for odometry data.
+- base_frame_id: The frame ID for base footprint data.
+
+This launch file also includes a commented out line for launching the move_base.launch file, which can be uncommented to enable the move_base node.
+
+Note: This documentation comment is specific to the provided code selection and may not cover the entire functionality of the system. -->
+
 <?xml version="1.0" ?>
 <launch>
     <!-- Create gazebo world -->

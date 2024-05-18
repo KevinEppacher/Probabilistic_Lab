@@ -212,10 +212,19 @@ include_directories(
 
 include_directories(include)
 
-add_executable(main src/main.cpp include/Localization.cpp)
+add_executable(main src/main.cpp include/Localization.cpp include/Particle_Filter.cpp include/Motion_Model.cpp)
 
 target_link_libraries(main
   ${catkin_LIBRARIES}
 )
 
 add_dependencies(main ${sensor_fusion_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+
+add_executable(my_test src/my_test.cpp)
+
+target_link_libraries(my_test
+  ${catkin_LIBRARIES}
+)
+
+add_dependencies(my_test ${sensor_fusion_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

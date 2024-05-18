@@ -5,18 +5,18 @@
 #include <vector>
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
+#include "Particle_Filter.h"
+#include "Motion_Model.h"
 
-struct Particle {
-    double x, y, theta;  // Particle state variables
-    double weight;       // Weight of this particle
-};
 
-struct State {
+struct State 
+{
     double x, y, theta;  // State of the robot
     State(double x = 0.0, double y = 0.0, double theta = 0.0) : x(x), y(y), theta(theta) {}
 };
 
-class Localization {
+class Localization 
+{
 public:
     Localization();
     ~Localization();
@@ -26,17 +26,6 @@ public:
 private:
     ros::NodeHandle nh;
     ros::Subscriber odom_sub;
-};
-
-class ParticleFilter {
-public:
-    explicit ParticleFilter(int quantityParticles = 100);  // Default value for particles
-    ~ParticleFilter();
-
-    std::vector<Particle> initializeParticles(const State& initState);
-
-private:
-    int quantityParticles;
 };
 
 #endif // LOCALIZATION_H
