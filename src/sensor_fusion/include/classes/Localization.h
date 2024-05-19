@@ -9,12 +9,6 @@
 #include "Motion_Model.h"
 
 
-struct State 
-{
-    double x, y, theta;  // State of the robot
-    State(double x = 0.0, double y = 0.0, double theta = 0.0) : x(x), y(y), theta(theta) {}
-};
-
 class Localization 
 {
 public:

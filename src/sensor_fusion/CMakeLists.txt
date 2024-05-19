@@ -210,21 +210,30 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-include_directories(include)
+include_directories(include/classes)
 
-add_executable(main src/main.cpp include/Localization.cpp include/Particle_Filter.cpp include/Motion_Model.cpp)
+add_library(sensor_fusion_lib
+  include/classes/Localization.cpp
+  include/classes/Particle_Filter.cpp
+  include/classes/Motion_Model.cpp
+)
+# add_library(sensor_fusion_structs
+#   include/structs/Particle.h
+#   include/structs/States.h
+# )
 
+include_directories(include/structs)
+
+add_executable(main src/main.cpp)
 target_link_libraries(main
+  sensor_fusion_lib
   ${catkin_LIBRARIES}
 )
-
 add_dependencies(main ${sensor_fusion_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-
 add_executable(my_test src/my_test.cpp)
-
 target_link_libraries(my_test
+  sensor_fusion_lib
   ${catkin_LIBRARIES}
 )
-
 add_dependencies(my_test ${sensor_fusion_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

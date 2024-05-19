@@ -9,17 +9,13 @@
 #include "Localization.h"
 #include "Particle_Filter.h"
 
-// Forward declaration of State
-class State;
-
-
 class MotionModel 
 {
 public:
     MotionModel();
     ~MotionModel();
 
-    geometry_msgs::Twist sampleMotionModel(const State& state, const State& control);
+    geometry_msgs::Twist sampleMotionModel();
 
 private:
 
