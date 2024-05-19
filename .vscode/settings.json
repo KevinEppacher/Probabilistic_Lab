@@ -57,7 +57,16 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "ros/ros.h": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "strstream": "cpp",
+        "list": "cpp",
+        "unordered_set": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "shared_mutex": "cpp",
+        "cfenv": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     },
     "cmake.sourceDirectory": "/Probabilistic_Lab/src/sensor_fusion"  
 }

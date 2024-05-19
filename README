@@ -3,6 +3,9 @@ xhost +local:
 Turtlebot Keyboard Control:
 roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
 
+Auswahl des Turtlebots:
+export TURTLEBOT3_MODEL=burger
+
 Git:
 
 git add .

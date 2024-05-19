@@ -12,20 +12,20 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
     for (int i = 0; i < quantityParticles; ++i)
     {
         // Particle particle;
-        particle.state.x = initState.x;
-        particle.state.y = initState.y;
-        particle.state.theta = initState.theta;
+        particle.pose.position.x = initState.x;
+        particle.pose.position.y = initState.y;
+        particle.pose.orientation.z = initState.theta;
         particle.weight = 1.0 / static_cast<double>(quantityParticles);
         particles.push_back(particle);
 
-        std::cout << "Particle Init State: " << particle.state.x << ", " << particle.state.y << ", " << particle.state.theta << ", " << particle.weight << std::endl;
+        std::cout << "Particle Init State: " << particle.pose.position.x << ", " << particle.pose.position.y << ", " << particle.pose.orientation.z << ", " << particle.weight << std::endl;
     }
 
     return particles;
 }
-std::vector<Particle> estimatePose(const std::vector<Particle>& particles,
+std::vector<Particle> ParticleFilter::estimatePose(const std::vector<Particle>& particles,
                                     const geometry_msgs::Twist& motionCommand,
-                                    const sensor_msgs::LaserScan& z, 
+                                    const sensor_msgs::LaserScan& sensorMeasurement, 
                                     const geometry_msgs::Pose& prevPose, 
                                     const nav_msgs::OccupancyGrid& map)
 {
@@ -34,6 +34,16 @@ std::vector<Particle> estimatePose(const std::vector<Particle>& particles,
     double totalWeights = 0.0;
 
     std::vector<Particle> updatedParticles = particles;
+
+    for(auto& particle : updatedParticles)
+    {
+        // // Sample Motion Model
+        // MotionModel motionModel;
+        // geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel();
+
+        ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
+
+    }
 
     return resampledParticles;
 }

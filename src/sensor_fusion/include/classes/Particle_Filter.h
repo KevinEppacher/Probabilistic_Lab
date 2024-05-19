@@ -29,8 +29,11 @@ public:
 
     std::vector<Particle> initializeParticles(const State& initState);
 
-    std::vector<Particle> estimatePose(const std::vector<Particle>& particles,const geometry_msgs::Twist& motionCommand, const sensor_msgs::LaserScan& z, const geometry_msgs::Pose& prevPose, const nav_msgs::OccupancyGrid& map);
-
+    std::vector<Particle> estimatePose(const std::vector<Particle>& particles,
+                                        const geometry_msgs::Twist& motionCommand,
+                                        const sensor_msgs::LaserScan& sensorMeasurement, 
+                                        const geometry_msgs::Pose& prevPose, 
+                                        const nav_msgs::OccupancyGrid& map);
 private:
     Particle particle;
     int quantityParticles;

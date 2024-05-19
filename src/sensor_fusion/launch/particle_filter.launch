@@ -1,0 +1,5 @@
+<launch>
+    <!-- Launch the main node -->
+    <node name="main" pkg="sensor_fusion" type="main" output="screen" />
+
+</launch>
