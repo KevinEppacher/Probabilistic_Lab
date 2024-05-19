@@ -113,6 +113,6 @@ Note: This documentation comment is specific to the provided code selection and 
 
     <!-- Uncomment the following line to enable the move_base node -->
     
-    <include file="move_base.launch" />
+    <!-- <include file="move_base.launch" /> -->
 
 </launch>
