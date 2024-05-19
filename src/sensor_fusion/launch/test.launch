@@ -113,6 +113,9 @@ Note: This documentation comment is specific to the provided code selection and 
 
     <!-- Uncomment the following line to enable the move_base node -->
     
+    <!-- Das <include>-Element ist eine Möglichkeit, um Code aus einer anderen Datei wiederzuverwenden. Es ermöglicht es,
+     den Code in separate Dateien aufzuteilen und ihn dann in anderen Dateien einzufügen, um die Wiederverwendbarkeit und
+      Lesbarkeit des Codes zu verbessern. -->
     <!-- <include file="move_base.launch" /> -->
 
 </launch>
