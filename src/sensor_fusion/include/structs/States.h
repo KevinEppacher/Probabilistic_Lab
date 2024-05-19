@@ -7,4 +7,5 @@ struct State
     State(double x = 0.0, double y = 0.0, double theta = 0.0) : x(x), y(y), theta(theta) {}
 };
 
+
 #endif // STATES_H

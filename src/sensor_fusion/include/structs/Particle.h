@@ -1,12 +1,12 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include "States.h"
+#include <geometry_msgs/Pose.h>
 
 struct Particle 
 {
-    State state;
-    double weight;       // Weight of this particle
+    geometry_msgs::Pose pose;
+    double weight;
 };
 
 #endif // PARTICLE_H

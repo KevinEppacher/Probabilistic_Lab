@@ -1,6 +1,5 @@
 #include "Particle_Filter.h"
 
-
 ParticleFilter::ParticleFilter(int quantityParticles) : quantityParticles(quantityParticles) {}
 
 ParticleFilter::~ParticleFilter() {}
@@ -23,4 +22,18 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
     }
 
     return particles;
+}
+std::vector<Particle> estimatePose(const std::vector<Particle>& particles,
+                                    const geometry_msgs::Twist& motionCommand,
+                                    const sensor_msgs::LaserScan& z, 
+                                    const geometry_msgs::Pose& prevPose, 
+                                    const nav_msgs::OccupancyGrid& map)
+{
+    std::vector<Particle> resampledParticles;
+
+    double totalWeights = 0.0;
+
+    std::vector<Particle> updatedParticles = particles;
+
+    return resampledParticles;
 }
