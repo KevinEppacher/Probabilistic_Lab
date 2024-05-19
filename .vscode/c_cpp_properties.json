@@ -1,16 +1,19 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Linux", // Configuration name for Linux
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**", // Include all files in the workspace folder
+                // ( Important for removing Red squiggles under #include "ros/ros.h" )
+                "/opt/ros/noetic/include/**", // Include files from ROS (Robot Operating System) library
+                "/usr/include/**" // Include files from system libraries
             ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "c17",
-            "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64"
+            "defines": [], // No additional defines
+            "compilerPath": "/usr/bin/gcc", // Path to the GCC compiler
+            "cStandard": "c17", // Use C17 standard
+            "cppStandard": "gnu++14", // Use GNU++14 standard
+            "intelliSenseMode": "linux-gcc-x64" // IntelliSense mode for Linux with GCC compiler
         }
     ],
-    "version": 4
+    "version": 4 // Version of the configuration file
 }

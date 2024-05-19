@@ -59,5 +59,5 @@
         "ros/ros.h": "cpp",
         "bit": "cpp"
     },
-    "cmake.sourceDirectory": "/Probabilistic_Lab/src/sensor_fusion"    
+    "cmake.sourceDirectory": "/Probabilistic_Lab/src/sensor_fusion"  
 }
