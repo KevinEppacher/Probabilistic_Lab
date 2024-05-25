@@ -114,11 +114,14 @@ Note: This documentation comment is specific to the provided code selection and 
     </node>
 
     <!-- <node name="main" pkg="sensor_fusion" type="main" output="screen" /> -->
+    <rosparam file="$(find sensor_fusion)/param/costmap_common_params_$(arg model).yaml" command="load" ns="global_costmap"/>
 
     
     <!-- Das <include>-Element ist eine Möglichkeit, um Code aus einer anderen Datei wiederzuverwenden. Es ermöglicht es,
      den Code in separate Dateien aufzuteilen und ihn dann in anderen Dateien einzufügen, um die Wiederverwendbarkeit und
       Lesbarkeit des Codes zu verbessern. -->
     <include file="$(find sensor_fusion)/launch/move_base.launch" />
+
+    <!-- <include file="$(find sensor_fusion)/launch/particle_filter.launch" /> -->
 
 </launch>
