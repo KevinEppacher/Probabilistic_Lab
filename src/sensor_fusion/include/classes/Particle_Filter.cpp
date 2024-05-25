@@ -1,8 +1,16 @@
 #include "Particle_Filter.h"
 
-ParticleFilter::ParticleFilter(int quantityParticles) : quantityParticles(quantityParticles) {}
+ParticleFilter::ParticleFilter(ros::NodeHandle &nodehandler, int quantityParticles) : publisher(nodehandler), quantityParticles(quantityParticles)
+{
+    // Communication::Publisher publisher(nh);
+}
 
 ParticleFilter::~ParticleFilter() {}
+
+void ParticleFilter::getNodehanlder(ros::NodeHandle &nodehandler)
+{
+    nh = nodehandler;
+}
 
 std::vector<Particle> ParticleFilter::initializeParticles(const State &initState)
 {
@@ -23,11 +31,11 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
 
     return particles;
 }
-std::vector<Particle> ParticleFilter::estimatePose(const std::vector<Particle>& particles,
-                                    const geometry_msgs::Twist& motionCommand,
-                                    const sensor_msgs::LaserScan& sensorMeasurement, 
-                                    const geometry_msgs::Pose& prevPose, 
-                                    const nav_msgs::OccupancyGrid& map)
+std::vector<Particle> ParticleFilter::estimatePose(const std::vector<Particle> &particles,
+                                                   const geometry_msgs::Twist &motionCommand,
+                                                   const sensor_msgs::LaserScan &sensorMeasurement,
+                                                   const geometry_msgs::Pose &prevPose,
+                                                   const nav_msgs::OccupancyGrid &map)
 {
     std::vector<Particle> resampledParticles;
 
@@ -35,14 +43,17 @@ std::vector<Particle> ParticleFilter::estimatePose(const std::vector<Particle>& 
 
     std::vector<Particle> updatedParticles = particles;
 
-    for(auto& particle : updatedParticles)
+    // Communication::Publisher publisher(nh);
+
+    for (auto &particle : updatedParticles)
     {
         // // Sample Motion Model
         // MotionModel motionModel;
         // geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel();
 
-        ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
+        publisher.publishPose(particle.pose);
 
+        // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
 
     return resampledParticles;

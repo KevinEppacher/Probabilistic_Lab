@@ -34,6 +34,7 @@ add_library(sensor_fusion_lib
   include/classes/Localization.cpp
   include/classes/Particle_Filter.cpp
   include/classes/Motion_Model.cpp
+  include/classes/Communication.cpp
 )
 
 ############################################################ CMakelist for main node ############################################################

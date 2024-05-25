@@ -15,6 +15,7 @@
 //Include Custom Classes
 #include "Localization.h"
 #include "Motion_Model.h"
+#include "Communication.h"
 
 //Include Structs
 #include "../structs/States.h"
@@ -24,8 +25,10 @@
 class ParticleFilter 
 {
 public:
-    explicit ParticleFilter(int quantityParticles = 100);  // Default value for particles
+    explicit ParticleFilter(ros::NodeHandle& nodehandler, int quantityParticles = 100);  // Default value for particles
     ~ParticleFilter();
+
+    void getNodehanlder(ros::NodeHandle& nodehandler);
 
     std::vector<Particle> initializeParticles(const State& initState);
 
@@ -37,6 +40,9 @@ public:
 private:
     Particle particle;
     int quantityParticles;
+    ros::NodeHandle nh;
+    Communication::Publisher publisher;
+
 };
 
 #endif // PARTICLE_FILTER_H
