@@ -5,7 +5,7 @@
 
   <!-- Arguments -->
   <!-- model: Specifies the model type of the robot (burger, waffle, waffle_pi). Default value is obtained from the TURTLEBOT3_MODEL environment variable. -->
-  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
   
   <!-- cmd_vel_topic: Specifies the topic for sending velocity commands to the robot. Default value is "/cmd_vel". -->
   <arg name="cmd_vel_topic" default="/cmd_vel" />

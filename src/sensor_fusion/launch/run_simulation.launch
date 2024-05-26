@@ -56,16 +56,15 @@ Note: This documentation comment is specific to the provided code selection and 
     </include>
     
     <!-- Define robot description parameter using xacro to process the URDF file -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_burger_for_autorace.urdf.xacro" />
-
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro"/>
     <!-- Spawn URDF model in Gazebo -->
-    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_burger -x 0.5 -y 0.5 -z 0 -Y 0 -param robot_description" />
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_burger -x 0.5 -y 0.5 -z 0.5 -Y 0 -param robot_description" />
 
     <!-- Include the turtlebot3_remote.launch file -->
     <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch"/>
 
     <!-- Start the map_server node to provide the map for localization -->
-    <node pkg="map_server" name="map_server" type="map_server" args="$(find sensor_fusion)/maps/mymap.yaml"/>
+    <node pkg="map_server" name="map_server" type="map_server" args="$(find sensor_fusion)/maps/map2.yaml"/>
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sensor_fusion)/config/rviz_white_background_config.rviz" />
 
