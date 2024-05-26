@@ -22,6 +22,8 @@ RUN sudo apt update && sudo apt upgrade -y
 
 RUN sudo apt install -y ros-$ROS_DISTRO-plotjuggler-ros
 
+RUN sudo apt-get install -y ros-noetic-dwa-local-planner
+
 RUN sudo apt-get install -y ros-noetic-turtlebot3* ros-noetic-turtlebot3 \
     && echo "export TURTLEBOT3_MODEL=burger" >> ~/.bashrc
 

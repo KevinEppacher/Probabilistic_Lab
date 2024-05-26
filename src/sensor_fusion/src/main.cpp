@@ -1,6 +1,5 @@
 #include "ros/ros.h"
 // Include Custom Classes
-#include "Localization.h"
 #include "Particle_Filter.h"
 #include "Motion_Model.h"
 #include "Communication.h"

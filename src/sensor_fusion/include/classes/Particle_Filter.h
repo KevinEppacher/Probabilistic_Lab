@@ -12,11 +12,13 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <random>
 #include <visualization_msgs/Marker.h>
+#include <tf/tf.h>
+
 
 //Include Custom Classes
-#include "Localization.h"
 #include "Motion_Model.h"
 #include "Communication.h"
+#include "Visualizer.h"
 
 //Include Structs
 #include "../structs/States.h"
@@ -44,6 +46,8 @@ private:
     ros::NodeHandle nh;
     Communication::Publisher publisher;
     Communication::Subscriber subscriber;
+    Visualizer::Visualizer visualizer;
+    MotionModel motionModel;
 
 };
 

@@ -6,18 +6,16 @@
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 
-#include "Localization.h"
-#include "Particle_Filter.h"
-
 class MotionModel 
 {
 public:
+    MotionModel(ros::NodeHandle& nh);
     MotionModel();
     ~MotionModel();
-
-    geometry_msgs::Twist sampleMotionModel();
+    geometry_msgs::Twist sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose);
 
 private:
+    double alpha1, alpha2, alpha3, alpha4, alpha5, alpha6;
 
 };
 

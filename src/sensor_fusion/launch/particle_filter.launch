@@ -1,5 +1,6 @@
 <launch>
     <!-- Launch the main node -->
     <node name="main" pkg="sensor_fusion" type="main" output="screen" />
+        <rosparam file="$(find sensor_fusion)/param/motion_model_params.yaml" command="load"/>
 
 </launch>

@@ -1,7 +1,11 @@
 #include "Particle_Filter.h"
 
-ParticleFilter::ParticleFilter(ros::NodeHandle &nodehandler, int quantityParticles) 
-    : publisher(nodehandler),subscriber(nh), quantityParticles(quantityParticles)
+ParticleFilter::ParticleFilter(ros::NodeHandle &nodehandler, int quantityParticles):
+    publisher(nodehandler),
+    subscriber(nh),
+    visualizer(nh),
+    quantityParticles(quantityParticles),
+    motionModel(nh)
 {
     // Communication::Publisher publisher(nh);
 }
@@ -32,11 +36,7 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
 
     return particles;
 }
-std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles,
-                                                   const geometry_msgs::Twist &motionCommand,
-                                                   const sensor_msgs::LaserScan &sensorMeasurement,
-                                                   const geometry_msgs::Pose &prevPose,
-                                                   const nav_msgs::OccupancyGrid &map)
+std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const geometry_msgs::Pose &prevPose, const nav_msgs::OccupancyGrid &map)
 {
     std::vector<Particle> resampledParticles;
 
@@ -44,16 +44,13 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     std::vector<Particle> updatedParticles = particles;
 
-    // Communication::Publisher publisher(nh);
-
     for (auto &particle : updatedParticles)
     {
         // // Sample Motion Model
-        // MotionModel motionModel;
-        // geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel();
+        geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel(motionCommand, prevPose);
 
-        publisher.publishPose(particle.pose, false);
-        nav_msgs::Odometry odom = subscriber.getOdom(false);
+        // publisher.publishPose(particle.pose, false);
+        // nav_msgs::Odometry odom = subscriber.getOdom(false);
 
         // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
