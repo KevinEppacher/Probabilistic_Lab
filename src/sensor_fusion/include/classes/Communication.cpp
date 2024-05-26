@@ -20,10 +20,11 @@ namespace Communication
         twistPub.publish(msg);
     }
 
-    void Publisher::publishPose(const geometry_msgs::Pose &msg)
+    void Publisher::publishPose(const geometry_msgs::Pose &msg, bool printPose)
     {
         posePub.publish(msg);
-        ROS_INFO("Particle Pose: %f, %f, %f", msg.position.x, msg.position.y, msg.orientation.z);
+        if (printPose)
+            ROS_INFO("Particle Pose: %f, %f, %f", msg.position.x, msg.position.y, msg.orientation.z);
     }
 
     // Subscriber class definitions
@@ -35,7 +36,14 @@ namespace Communication
     void Subscriber::odomCallback(const nav_msgs::Odometry::ConstPtr &msg)
     {
         // Handle the incoming odometry message
-        // Example: ROS_INFO("Received odom: %f", msg->pose.pose.position.x);
+        odom = *msg;
+    }
+
+    nav_msgs::Odometry Subscriber::getOdom(bool printOdom)
+    {
+        if (printOdom)
+            ROS_INFO("Received odom: %f", odom.pose.pose.position.x);
+        return odom;
     }
 
 } // namespace communication

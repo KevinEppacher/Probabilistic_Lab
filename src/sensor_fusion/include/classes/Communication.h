@@ -13,6 +13,7 @@ namespace Communication {
 class Communication {
 public:
     explicit Communication(ros::NodeHandle& nodehandler);
+    Communication();
     virtual ~Communication();
 
 protected:
@@ -23,7 +24,7 @@ class Publisher : public Communication {
 public:
     Publisher(ros::NodeHandle& nodehandler);
     void publishTwist(const geometry_msgs::Twist& msg);
-    void publishPose(const geometry_msgs::Pose& msg);
+    void publishPose(const geometry_msgs::Pose& msg, bool printPose = false);
 
 private:
     ros::Publisher twistPub;
@@ -34,9 +35,11 @@ class Subscriber : public Communication {
 public:
     Subscriber(ros::NodeHandle& nodehandler);
     void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);
+    nav_msgs::Odometry getOdom(bool printOdom = false);
+
 
 private:
-    ros::Subscriber odomSub;
+    ros::Subscriber odomSub; nav_msgs::Odometry odom;
 
 
 };

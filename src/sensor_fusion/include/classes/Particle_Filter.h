@@ -42,6 +42,7 @@ private:
     int quantityParticles;
     ros::NodeHandle nh;
     Communication::Publisher publisher;
+    Communication::Subscriber subscriber;
 
 };
 

@@ -1,6 +1,7 @@
 #include "Particle_Filter.h"
 
-ParticleFilter::ParticleFilter(ros::NodeHandle &nodehandler, int quantityParticles) : publisher(nodehandler), quantityParticles(quantityParticles)
+ParticleFilter::ParticleFilter(ros::NodeHandle &nodehandler, int quantityParticles) 
+    : publisher(nodehandler),subscriber(nh), quantityParticles(quantityParticles)
 {
     // Communication::Publisher publisher(nh);
 }
@@ -51,7 +52,8 @@ std::vector<Particle> ParticleFilter::estimatePose(const std::vector<Particle> &
         // MotionModel motionModel;
         // geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel();
 
-        publisher.publishPose(particle.pose);
+        publisher.publishPose(particle.pose, false);
+        subscriber.getOdom();
 
         // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
