@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
     while (ros::ok())
     {
-        particleFilter.estimatePose(particles, motionCommand, sensorMeasurement, prevPose, map);
+        particleFilter.estimatePoseWithMCL(particles, motionCommand, sensorMeasurement, prevPose, map);
 
         ros::spinOnce();
         loop_rate.sleep();

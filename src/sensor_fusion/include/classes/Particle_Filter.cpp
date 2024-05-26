@@ -32,7 +32,7 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
 
     return particles;
 }
-std::vector<Particle> ParticleFilter::estimatePose(const std::vector<Particle> &particles,
+std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles,
                                                    const geometry_msgs::Twist &motionCommand,
                                                    const sensor_msgs::LaserScan &sensorMeasurement,
                                                    const geometry_msgs::Pose &prevPose,
@@ -53,7 +53,7 @@ std::vector<Particle> ParticleFilter::estimatePose(const std::vector<Particle> &
         // geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel();
 
         publisher.publishPose(particle.pose, false);
-        subscriber.getOdom();
+        nav_msgs::Odometry odom = subscriber.getOdom(false);
 
         // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }

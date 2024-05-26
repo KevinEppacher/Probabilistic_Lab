@@ -11,6 +11,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <random>
+#include <visualization_msgs/Marker.h>
 
 //Include Custom Classes
 #include "Localization.h"
@@ -32,7 +33,7 @@ public:
 
     std::vector<Particle> initializeParticles(const State& initState);
 
-    std::vector<Particle> estimatePose(const std::vector<Particle>& particles,
+    std::vector<Particle> estimatePoseWithMCL(const std::vector<Particle>& particles,
                                         const geometry_msgs::Twist& motionCommand,
                                         const sensor_msgs::LaserScan& sensorMeasurement, 
                                         const geometry_msgs::Pose& prevPose, 
