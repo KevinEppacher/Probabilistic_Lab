@@ -49,6 +49,7 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
         // // Sample Motion Model
         geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel(motionCommand, prevPose);
 
+        
         // publisher.publishPose(particle.pose, false);
         // nav_msgs::Odometry odom = subscriber.getOdom(false);
 

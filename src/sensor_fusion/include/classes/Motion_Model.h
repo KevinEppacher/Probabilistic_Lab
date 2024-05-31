@@ -5,6 +5,8 @@
 #include <vector>
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
+#include <random>
+#include <tf/transform_datatypes.h>
 
 class MotionModel 
 {
@@ -13,9 +15,13 @@ public:
     MotionModel();
     ~MotionModel();
     geometry_msgs::Twist sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose);
+    double sample(double std_dev);
+    double getTimeDifference();
+
 
 private:
     double alpha1, alpha2, alpha3, alpha4, alpha5, alpha6;
+    double v_hat, w_hat, v, w, gamma_hat, theta, dt;
 
 };
 
