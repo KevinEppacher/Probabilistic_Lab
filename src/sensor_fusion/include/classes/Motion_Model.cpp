@@ -18,7 +18,8 @@ geometry_msgs::Twist MotionModel::sampleMotionModel(geometry_msgs::Twist motionC
 {
     geometry_msgs::Twist sampledMotion;
 
-    theta = tf::getYaw(prevPose.orientation);
+    theta = prevPose.orientation.z;
+    ROS_INFO("Theta: %f", theta);
 
     dt = getTimeDifference();
     

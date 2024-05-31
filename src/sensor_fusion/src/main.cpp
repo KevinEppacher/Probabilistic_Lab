@@ -9,7 +9,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "localization_node");
     ros::NodeHandle nh;
 
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(1);
 
     // Setup
     State robotState(0, 0, 0);

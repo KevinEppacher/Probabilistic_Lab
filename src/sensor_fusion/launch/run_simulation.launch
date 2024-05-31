@@ -50,7 +50,7 @@ Note: This documentation comment is specific to the provided code selection and 
     <!-- Create gazebo world -->
     <include file="$(find gazebo_ros)launch/empty_world.launch" >
         <arg name="world_name" value="$(find sensor_fusion)/maps/10by10_maze.world_1.xml" />
-        <arg name="gui" value="true" />
+        <arg name="gui" value="false" />
         <arg name="use_sim_time" value="true" />
         <arg name="paused" value="false" />
     </include>
