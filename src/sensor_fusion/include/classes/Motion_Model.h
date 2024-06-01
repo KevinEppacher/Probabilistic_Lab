@@ -7,6 +7,7 @@
 #include <nav_msgs/Odometry.h>
 #include <random>
 #include <tf/transform_datatypes.h>
+#include <cmath>
 
 class MotionModel 
 {
@@ -14,9 +15,10 @@ public:
     MotionModel(ros::NodeHandle& nh);
     MotionModel();
     ~MotionModel();
-    geometry_msgs::Twist sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose);
+    geometry_msgs::Twist sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose currentPose);
     double sample(double std_dev);
     double getTimeDifference();
+    double normalize_angle_positive(double angle);
 
 
 private:

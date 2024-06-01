@@ -36,7 +36,7 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
 
     return particles;
 }
-std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const geometry_msgs::Pose &prevPose, const nav_msgs::OccupancyGrid &map)
+std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const geometry_msgs::Pose &currentPose, const nav_msgs::OccupancyGrid &map)
 {
     std::vector<Particle> resampledParticles;
 
@@ -47,7 +47,7 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
     for (auto &particle : updatedParticles)
     {
         // // Sample Motion Model
-        geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel(motionCommand, prevPose);
+        geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel(motionCommand, currentPose);
 
         // ROS_INFO("Sampled Motion: %f, %f, %f", sampledMotion.linear.x, sampledMotion.linear.y, sampledMotion.angular.z);
  

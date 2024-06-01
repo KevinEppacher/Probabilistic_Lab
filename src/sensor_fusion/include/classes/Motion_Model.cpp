@@ -1,6 +1,6 @@
 #include "Motion_Model.h"
 
-MotionModel::MotionModel(ros::NodeHandle& nh) 
+MotionModel::MotionModel(ros::NodeHandle &nh)
 {
     nh.getParam("alpha1", alpha1);
     nh.getParam("alpha2", alpha2);
@@ -14,15 +14,16 @@ MotionModel::MotionModel() {}
 
 MotionModel::~MotionModel() {}
 
-geometry_msgs::Twist MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose)
+geometry_msgs::Twist MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose currentPose)
 {
     geometry_msgs::Twist sampledMotion;
 
-    theta = prevPose.orientation.z;
-    ROS_INFO("Theta: %f", theta);
+    theta = tf::getYaw(currentPose.orientation);
+    theta = normalize_angle_positive(theta);
+    // ROS_INFO("Theta: %f degrees", theta * 180.0 / M_PI);
 
     dt = getTimeDifference();
-    
+
     v = motionCommand.linear.x;
     w = motionCommand.angular.z;
 
@@ -30,14 +31,14 @@ geometry_msgs::Twist MotionModel::sampleMotionModel(geometry_msgs::Twist motionC
     w_hat = w_hat + sample(alpha3 * std::abs(v) + alpha4 * std::abs(w));
     gamma_hat = sample(alpha5 * std::abs(v) + alpha6 * std::abs(w));
 
-    sampledMotion.linear.x = sampledMotion.linear.x - ( v_hat * sin(theta)) / w_hat + ( v_hat * sin(theta + w_hat * dt)) / w_hat;
-    sampledMotion.linear.y = sampledMotion.linear.y + ( v_hat * cos(theta)) / w_hat - ( v_hat * cos(theta + w_hat * dt)) / w_hat;
+    sampledMotion.linear.x = sampledMotion.linear.x - (v_hat * sin(theta)) / w_hat + (v_hat * sin(theta + w_hat * dt)) / w_hat;
+    sampledMotion.linear.y = sampledMotion.linear.y + (v_hat * cos(theta)) / w_hat - (v_hat * cos(theta + w_hat * dt)) / w_hat;
     sampledMotion.angular.z = sampledMotion.angular.z + w_hat * dt + gamma_hat * dt;
 
     return sampledMotion;
 }
 
-double MotionModel::sample(double std_dev) 
+double MotionModel::sample(double std_dev)
 {
     static std::random_device rd;
     static std::default_random_engine generator(rd());
@@ -52,4 +53,9 @@ double MotionModel::getTimeDifference()
     double dt = (currentTime - prevTime).toSec();
     prevTime = currentTime;
     return dt;
+}
+
+double MotionModel::normalize_angle_positive(double angle)
+{
+    return fmod(fmod(angle, 2 * M_PI) + 2 * M_PI, 2 * M_PI);
 }

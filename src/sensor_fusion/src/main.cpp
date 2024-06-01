@@ -13,17 +13,21 @@ int main(int argc, char **argv)
 
     // Setup
     State robotState(0, 0, 0);
-    geometry_msgs::Twist motionCommand;
-    sensor_msgs::LaserScan sensorMeasurement;
-    geometry_msgs::Pose prevPose;
-    nav_msgs::OccupancyGrid map;
 
+    Communication::Subscriber subscriber(nh);
+
+    nav_msgs::OccupancyGrid map = subscriber.getMap(true);
     ParticleFilter particleFilter(nh, 100);
     std::vector<Particle> particles = particleFilter.initializeParticles(robotState);
 
     while (ros::ok())
-    {
-        particleFilter.estimatePoseWithMCL(particles, motionCommand, sensorMeasurement, prevPose, map);
+    {      
+        geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);
+        nav_msgs::Odometry odom = subscriber.getOdom(false);
+        geometry_msgs::Pose currentPose = odom.pose.pose;
+        sensor_msgs::LaserScan laserMeasurement = subscriber.getLaser(false);
+
+        particleFilter.estimatePoseWithMCL(particles, motionCommand, laserMeasurement, currentPose, map);
 
         ros::spinOnce();
         loop_rate.sleep();
