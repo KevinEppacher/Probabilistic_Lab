@@ -16,12 +16,14 @@ int main(int argc, char **argv)
 
     Communication::Subscriber subscriber(nh);
 
-    nav_msgs::OccupancyGrid map = subscriber.getMap(true);
+    nav_msgs::OccupancyGrid map = subscriber.getMap();
+
     ParticleFilter particleFilter(nh, 100);
+    
     std::vector<Particle> particles = particleFilter.initializeParticles(robotState);
 
     while (ros::ok())
-    {      
+    {
         geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);
         nav_msgs::Odometry odom = subscriber.getOdom(false);
         geometry_msgs::Pose currentPose = odom.pose.pose;

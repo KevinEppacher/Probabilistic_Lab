@@ -47,13 +47,15 @@ public:
     sensor_msgs::LaserScan getLaser(bool printLaser);
     // Map Subscriber
     void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr &msg);
-    nav_msgs::OccupancyGrid getMap(bool printMap);
+    nav_msgs::OccupancyGrid getMap();
+    bool waitForMap();
+
 
 private:
     ros::Subscriber odomSub; nav_msgs::Odometry odom;
     ros::Subscriber cmdVelSub; geometry_msgs::Twist cmd_vel;
     ros::Subscriber laserSub; sensor_msgs::LaserScan laser;
-    ros::Subscriber mapSub; nav_msgs::OccupancyGrid map;
+    ros::Subscriber mapSub; nav_msgs::OccupancyGrid map; 
 
 };
 

@@ -33,7 +33,7 @@ public:
 
     void getNodehanlder(ros::NodeHandle& nodehandler);
 
-    std::vector<Particle> initializeParticles(const State& initState);
+    std::vector<Particle> initializeParticles(const State &initState, const nav_msgs::OccupancyGrid &map);
 
     std::vector<Particle> estimatePoseWithMCL(const std::vector<Particle>& particles,
                                         const geometry_msgs::Twist& motionCommand,

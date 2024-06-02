@@ -17,7 +17,7 @@ void ParticleFilter::getNodehanlder(ros::NodeHandle &nodehandler)
     nh = nodehandler;
 }
 
-std::vector<Particle> ParticleFilter::initializeParticles(const State &initState)
+std::vector<Particle> ParticleFilter::initializeParticles(const State &initState, const nav_msgs::OccupancyGrid &map)
 {
     std::vector<Particle> particles;
     particles.reserve(quantityParticles);
@@ -36,6 +36,7 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
 
     return particles;
 }
+
 std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const geometry_msgs::Pose &currentPose, const nav_msgs::OccupancyGrid &map)
 {
     std::vector<Particle> resampledParticles;
