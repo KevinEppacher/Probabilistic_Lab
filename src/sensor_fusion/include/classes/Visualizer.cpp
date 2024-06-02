@@ -9,6 +9,7 @@ Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler)
     laserScanPub = nh.advertise<sensor_msgs::LaserScan>("laserScan", 1);
     odomPub = nh.advertise<nav_msgs::Odometry>("odom", 1);
     markerPub = nh.advertise<visualization_msgs::Marker>("marker", 1);
+    poseArrayMotionModel = nh.advertise<geometry_msgs::PoseArray>("poseArrayMotionModel", 1);
 }
 
 Visualizer::Visualizer::~Visualizer() {}
@@ -33,7 +34,7 @@ void Visualizer::Visualizer::publishPoseArray(geometry_msgs::PoseArray &poseArra
     {
         for (int i = 0; i < poseArray.poses.size(); ++i)
         {
-            ROS_INFO("PoseArray[%d]: %f, %f, %f", i, poseArray.poses[i].position.x, poseArray.poses[i].position.y, poseArray.poses[i].orientation.z);
+            ROS_INFO("PoseArray[%d]: %f, %f, %f", i, poseArray.poses[i].position.x, poseArray.poses[i].position.y, tf::getYaw(poseArray.poses[i].orientation));
         }
     }
 }
@@ -78,20 +79,17 @@ void Visualizer::Visualizer::publishMarker(const visualization_msgs::Marker &mar
     }
 }
 
-void Visualizer::Visualizer::publishPoseArray(const std::vector<Particle> &particles)
+void Visualizer::Visualizer::publishPoseArrayFromMotionModel(geometry_msgs::PoseArray &poseArray, bool printPoseArray)
 {
-    geometry_msgs::PoseArray poseArray;
-    poseArray.header.frame_id = "map";
-    poseArray.header.stamp = ros::Time::now();
+    poseArray.header.frame_id = "map"; // der relevante Frame, typischerweise "map" oder "odom"
 
-    for (const auto &particle : particles)
+    poseArrayMotionModel.publish(poseArray);
+
+    if (printPoseArray)
     {
-        geometry_msgs::Pose pose;
-        pose.position.x = particle.pose.position.x;
-        pose.position.y = particle.pose.position.y;
-        pose.orientation = tf::createQuaternionMsgFromYaw(particle.pose.orientation.z);
-        poseArray.poses.push_back(pose);
+        for (int i = 0; i < poseArray.poses.size(); ++i)
+        {
+            ROS_INFO("PoseArray[%d]: %f, %f, %f", i, poseArray.poses[i].position.x, poseArray.poses[i].position.y, tf::getYaw(poseArray.poses[i].orientation));
+        }
     }
-
-    poseArrayPub.publish(poseArray);
 }

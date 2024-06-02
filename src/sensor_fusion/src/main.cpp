@@ -20,10 +20,10 @@ int main(int argc, char **argv)
 
     ParticleFilter particleFilter(nh, 100);
 
+    std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
 
     while (ros::ok())
     {
-    std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
         geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);
         nav_msgs::Odometry odom = subscriber.getOdom(false);
         geometry_msgs::Pose currentPose = odom.pose.pose;

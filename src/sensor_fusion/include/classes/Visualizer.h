@@ -38,6 +38,11 @@ namespace Visualizer
         void publishOdom(const nav_msgs::Odometry &odom, bool printOdom = false);
         void publishMarker(const visualization_msgs::Marker &marker, bool printMarker = false);
         void publishPoseArray(const std::vector<Particle>& particles);
+        
+        // Custom (delelte these Methdos if not needed)
+        void publishPoseArrayFromMotionModel(geometry_msgs::PoseArray &poseArray, bool printPoseArray = false);
+
+
 
     private:
         ros::NodeHandle nh;
@@ -47,6 +52,9 @@ namespace Visualizer
         ros::Publisher laserScanPub;
         ros::Publisher odomPub;
         ros::Publisher markerPub;
+
+        // Custom (delete these Methdos if not needed)
+        ros::Publisher poseArrayMotionModel;
     };
 } // namespace Visualizer
 

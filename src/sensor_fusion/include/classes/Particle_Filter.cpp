@@ -21,23 +21,7 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
     std::vector<Particle> particles;
     particles.reserve(quantityParticles);
 
-    std::vector<std::pair<float, float>> free_cells;
-
-    // Identifizieren freier Zellen
-    for (unsigned int y = 0; y < map.info.height; y++)
-    {
-        for (unsigned int x = 0; x < map.info.width; x++)
-        {
-            int index = x + y * map.info.width;
-            if (map.data[index] == 0)
-            { // 0 bedeutet frei
-                // Umrechnung von Zellenkoordinaten in Weltkoordinaten
-                float world_x = map.info.origin.position.x + (x + 0.5) * map.info.resolution;
-                float world_y = map.info.origin.position.y + (y + 0.5) * map.info.resolution;
-                free_cells.emplace_back(world_x, world_y);
-            }
-        }
-    }
+    std::vector<std::pair<float, float>> free_cells = findFreeCells(map);
 
     // Erzeugen von Partikeln an zufälligen freien Stellen
     std::random_device rd;
@@ -50,12 +34,55 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
         Particle particle;
         particle.pose.position.x = free_cells[cell_index].first;
         particle.pose.position.y = free_cells[cell_index].second;
-        particle.pose.orientation.z = initState.theta; // Initialwinkel beibehalten oder ebenfalls zufällig wählen
+        double randomYaw = randomOrientation(gen);
+        particle.pose.orientation =  tf::createQuaternionMsgFromYaw(randomYaw); 
         particle.weight = 1.0 / static_cast<double>(quantityParticles);
         particles.push_back(particle);
+        // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
 
+    geometry_msgs::PoseArray particleArray = convertParticlesToPoseArray(particles);
+
+    visualizer.publishPoseArray(particleArray, false);
+
     return particles;
+}
+
+std::vector<std::pair<float, float>> ParticleFilter::findFreeCells(const nav_msgs::OccupancyGrid &map)
+{
+    std::vector<std::pair<float, float>> free_cells;
+    for (unsigned int y = 0; y < map.info.height; y++)
+    {
+        for (unsigned int x = 0; x < map.info.width; x++)
+        {
+            int index = x + y * map.info.width;
+            if (map.data[index] == 0)
+            { // 0 bedeutet frei
+                float world_x = map.info.origin.position.x + (x + 0.5) * map.info.resolution;
+                float world_y = map.info.origin.position.y + (y + 0.5) * map.info.resolution;
+                free_cells.emplace_back(world_x, world_y);
+            }
+        }
+    }
+    return free_cells;
+}
+
+float ParticleFilter::randomOrientation(std::mt19937 &gen)
+{
+    std::uniform_real_distribution<> dis(0, 2 * M_PI);
+    return dis(gen);
+}
+
+geometry_msgs::PoseArray ParticleFilter::convertParticlesToPoseArray(const std::vector<Particle> &particles)
+{
+    geometry_msgs::PoseArray particleArray;
+
+    for (auto &particle : particles)
+    {
+        particleArray.poses.push_back(particle.pose);
+    }
+
+    return particleArray;
 }
 
 std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const geometry_msgs::Pose &currentPose, const nav_msgs::OccupancyGrid &map)
@@ -66,13 +93,21 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     std::vector<Particle> updatedParticles = particles;
 
+    geometry_msgs::PoseArray poseArrayAfterMotionModel;
+
     for (auto &particle : updatedParticles)
     {
         // // Sample Motion Model
-        geometry_msgs::Twist sampledMotion = motionModel.sampleMotionModel(motionCommand, currentPose);
+        geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, currentPose);
+
+        poseArrayAfterMotionModel.poses.push_back(sampledPose);
 
         // ROS_INFO("Sampled Motion: %f, %f, %f", sampledMotion.linear.x, sampledMotion.linear.y, sampledMotion.angular.z);
     }
+
+    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
+
+    // geometry_msgs::PoseArray updatedParticleArray = convertParticlesToPoseArray(updatedParticles);
 
     return resampledParticles;
 }

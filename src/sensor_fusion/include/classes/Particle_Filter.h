@@ -40,6 +40,9 @@ public:
                                         const sensor_msgs::LaserScan& sensorMeasurement, 
                                         const geometry_msgs::Pose& currentPose, 
                                         const nav_msgs::OccupancyGrid& map);
+
+    geometry_msgs::PoseArray convertParticlesToPoseArray(const std::vector<Particle> &particles);
+
 private:
     Particle particle;
     int quantityParticles;
@@ -48,6 +51,10 @@ private:
     Communication::Subscriber subscriber;
     Visualizer::Visualizer visualizer;
     MotionModel motionModel;
+
+    std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid& map);
+
+    float randomOrientation(std::mt19937 &gen);
 
 };
 
