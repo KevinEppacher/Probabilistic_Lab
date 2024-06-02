@@ -1,7 +1,5 @@
 #include "Visualizer.h"
 
-
-
 Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler)
 {
     nh = nodehandler;
@@ -24,7 +22,6 @@ void Visualizer::Visualizer::publishPose(const geometry_msgs::Pose &pose, bool p
         ROS_INFO("Pose: %f, %f, %f", pose.position.x, pose.position.y, pose.orientation.z);
     }
 }
-
 
 void Visualizer::Visualizer::publishPoseArray(geometry_msgs::PoseArray &poseArray, bool printPoseArray)
 {
@@ -81,3 +78,20 @@ void Visualizer::Visualizer::publishMarker(const visualization_msgs::Marker &mar
     }
 }
 
+void Visualizer::Visualizer::publishPoseArray(const std::vector<Particle> &particles)
+{
+    geometry_msgs::PoseArray poseArray;
+    poseArray.header.frame_id = "map";
+    poseArray.header.stamp = ros::Time::now();
+
+    for (const auto &particle : particles)
+    {
+        geometry_msgs::Pose pose;
+        pose.position.x = particle.pose.position.x;
+        pose.position.y = particle.pose.position.y;
+        pose.orientation = tf::createQuaternionMsgFromYaw(particle.pose.orientation.z);
+        poseArray.poses.push_back(pose);
+    }
+
+    poseArrayPub.publish(poseArray);
+}

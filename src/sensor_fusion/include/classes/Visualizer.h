@@ -20,6 +20,8 @@
 #include <string>
 #include <cmath>
 
+#include "../structs/Particle.h"
+
 namespace Visualizer
 {
     class Visualizer
@@ -35,6 +37,7 @@ namespace Visualizer
         void publishLaserScan(const sensor_msgs::LaserScan &laserScan, bool printLaserScan = false);
         void publishOdom(const nav_msgs::Odometry &odom, bool printOdom = false);
         void publishMarker(const visualization_msgs::Marker &marker, bool printMarker = false);
+        void publishPoseArray(const std::vector<Particle>& particles);
 
     private:
         ros::NodeHandle nh;
