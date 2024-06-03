@@ -105,6 +105,8 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
         // ROS_INFO("Sampled Motion: %f, %f, %f", sampledMotion.linear.x, sampledMotion.linear.y, sampledMotion.angular.z);
     }
 
+    // std::cout<<"PoseArrayAfterMotionModel: "<<poseArrayAfterMotionModel<<std::endl;
+
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
 
     // geometry_msgs::PoseArray updatedParticleArray = convertParticlesToPoseArray(updatedParticles);
