@@ -85,7 +85,7 @@ geometry_msgs::PoseArray ParticleFilter::convertParticlesToPoseArray(const std::
     return particleArray;
 }
 
-std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const geometry_msgs::Pose &currentPose, const nav_msgs::OccupancyGrid &map)
+std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const nav_msgs::OccupancyGrid &map)
 {
     std::vector<Particle> resampledParticles;
 
@@ -98,14 +98,11 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
     for (auto &particle : updatedParticles)
     {
         // // Sample Motion Model
-        geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, currentPose);
+        geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, particle.pose);
 
         poseArrayAfterMotionModel.poses.push_back(sampledPose);
 
-        // ROS_INFO("Sampled Motion: %f, %f, %f", sampledMotion.linear.x, sampledMotion.linear.y, sampledMotion.angular.z);
     }
-
-    // std::cout<<"PoseArrayAfterMotionModel: "<<poseArrayAfterMotionModel<<std::endl;
 
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
 

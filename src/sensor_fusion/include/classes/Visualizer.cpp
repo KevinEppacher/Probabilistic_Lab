@@ -4,7 +4,7 @@ Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler)
 {
     nh = nodehandler;
     posePub = nh.advertise<geometry_msgs::Pose>("pose", 1);
-    poseArrayPub = nh.advertise<geometry_msgs::PoseArray>("poseArray", 1);
+    poseArrayPub = nh.advertise<geometry_msgs::PoseArray>("poseArray", 100);
     mapPub = nh.advertise<nav_msgs::OccupancyGrid>("map", 1);
     laserScanPub = nh.advertise<sensor_msgs::LaserScan>("laserScan", 1);
     odomPub = nh.advertise<nav_msgs::Odometry>("odom", 1);

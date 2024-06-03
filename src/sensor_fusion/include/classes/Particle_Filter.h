@@ -38,7 +38,6 @@ public:
     std::vector<Particle> estimatePoseWithMCL(const std::vector<Particle>& particles,
                                         const geometry_msgs::Twist& motionCommand,
                                         const sensor_msgs::LaserScan& sensorMeasurement, 
-                                        const geometry_msgs::Pose& currentPose, 
                                         const nav_msgs::OccupancyGrid& map);
 
     geometry_msgs::PoseArray convertParticlesToPoseArray(const std::vector<Particle> &particles);

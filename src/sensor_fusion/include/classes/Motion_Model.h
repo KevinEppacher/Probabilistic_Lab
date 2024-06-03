@@ -24,6 +24,8 @@ public:
 private:
     double alpha1, alpha2, alpha3, alpha4, alpha5, alpha6;
     double v_hat, w_hat, v, w, gamma_hat, theta, dt;
+    geometry_msgs::Pose sampledPose;
+
 
 };
 

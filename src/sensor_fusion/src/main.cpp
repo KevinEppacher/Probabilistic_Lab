@@ -9,7 +9,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "localization_node");
     ros::NodeHandle nh;
 
-    ros::Rate loop_rate(1);
+    ros::Rate loop_rate(100);
 
     // Setup
     State robotState(0, 0, 0);
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
         geometry_msgs::Pose currentPose = odom.pose.pose;
         sensor_msgs::LaserScan laserMeasurement = subscriber.getLaser(false);
 
-        particleFilter.estimatePoseWithMCL(particles, motionCommand, laserMeasurement, currentPose, map);
+        particleFilter.estimatePoseWithMCL(particles, motionCommand, laserMeasurement, map);
 
         ros::spinOnce();
         loop_rate.sleep();

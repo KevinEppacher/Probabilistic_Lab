@@ -16,8 +16,6 @@ MotionModel::~MotionModel() {}
 
 geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose currentPose)
 {
-    geometry_msgs::Pose sampledPose;
-
     theta = tf::getYaw(currentPose.orientation);
     theta = normalize_angle_positive(theta);
     // ROS_INFO("Theta: %f degrees", theta * 180.0 / M_PI);
@@ -27,12 +25,19 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     v = motionCommand.linear.x;
     w = motionCommand.angular.z;
 
+    // ROS_INFO("v: %f", v);
+    // ROS_INFO("w: %f", w);
+
     v_hat = v_hat + sample(alpha1 * std::abs(v) + alpha2 * std::abs(w));
+    // ROS_INFO("v_hat: %f", v_hat);
+
     w_hat = w_hat + sample(alpha3 * std::abs(v) + alpha4 * std::abs(w));
+    // ROS_INFO("w_hat: %f", w_hat);
+
     gamma_hat = sample(alpha5 * std::abs(v) + alpha6 * std::abs(w));
 
-    sampledPose.position.x= sampledPose.position.x - (v_hat * sin(theta)) / w_hat + (v_hat * sin(theta + w_hat * dt)) / w_hat;
-    sampledPose.position.y = sampledPose.position.y + (v_hat * cos(theta)) / w_hat - (v_hat * cos(theta + w_hat * dt)) / w_hat;
+    sampledPose.position.x = currentPose.position.x - (v_hat * sin(theta)) / w_hat + (v_hat * sin(theta + w_hat * dt)) / w_hat;
+    sampledPose.position.y = currentPose.position.y + (v_hat * cos(theta)) / w_hat - (v_hat * cos(theta + w_hat * dt)) / w_hat;
     theta = theta + w_hat * dt + gamma_hat * dt;
     sampledPose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
