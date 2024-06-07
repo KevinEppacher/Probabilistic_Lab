@@ -30,17 +30,18 @@ namespace Visualizer
         explicit Visualizer(ros::NodeHandle &nodehandler);
         Visualizer();
         virtual ~Visualizer();
-
+        // Cummon
         void publishPose(const geometry_msgs::Pose &pose, bool printPose = false);
-        void publishPoseArray(geometry_msgs::PoseArray &poseArray, bool printPoseArray = false);
         void publishMap(const nav_msgs::OccupancyGrid &map, bool printMap = false);
         void publishLaserScan(const sensor_msgs::LaserScan &laserScan, bool printLaserScan = false);
         void publishOdom(const nav_msgs::Odometry &odom, bool printOdom = false);
         void publishMarker(const visualization_msgs::Marker &marker, bool printMarker = false);
-        void publishPoseArray(const std::vector<Particle>& particles);
-        
-        // Custom (delelte these Methdos if not needed)
+        void publishPoseArray(geometry_msgs::PoseArray &poseArray, bool printPoseArray = false);
+        // Custom Pose Arrays(delete these Methdos if not needed)
+        void publishInitialParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray);
         void publishPoseArrayFromMotionModel(geometry_msgs::PoseArray &poseArray, bool printPoseArray = false);
+
+        
 
 
 
@@ -53,8 +54,10 @@ namespace Visualizer
         ros::Publisher odomPub;
         ros::Publisher markerPub;
 
-        // Custom (delete these Methdos if not needed)
-        ros::Publisher poseArrayMotionModel;
+        // Custom Pose Arrays(delete these Methdos if not needed)
+        ros::Publisher poseArrayMotionModelPub;
+        ros::Publisher initialParticlesPub;
+
     };
 } // namespace Visualizer
 

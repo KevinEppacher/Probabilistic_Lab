@@ -43,7 +43,7 @@ std::vector<Particle> ParticleFilter::initializeParticles(const State &initState
 
     geometry_msgs::PoseArray particleArray = convertParticlesToPoseArray(particles);
 
-    visualizer.publishPoseArray(particleArray, false);
+    visualizer.publishInitialParticles(particleArray, false);
 
     return particles;
 }
@@ -103,6 +103,8 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
         poseArrayAfterMotionModel.poses.push_back(sampledPose);
 
     }
+
+    // Fehler ausgeben von poseArrayAfterMotionModel vom jetzigen PoseArray zur vorherigen PoseArray
 
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
 

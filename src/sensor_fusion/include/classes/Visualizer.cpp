@@ -4,12 +4,13 @@ Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler)
 {
     nh = nodehandler;
     posePub = nh.advertise<geometry_msgs::Pose>("pose", 1);
-    poseArrayPub = nh.advertise<geometry_msgs::PoseArray>("poseArray", 100);
+    poseArrayPub = nh.advertise<geometry_msgs::PoseArray>("poseArray", 1);
     mapPub = nh.advertise<nav_msgs::OccupancyGrid>("map", 1);
     laserScanPub = nh.advertise<sensor_msgs::LaserScan>("laserScan", 1);
     odomPub = nh.advertise<nav_msgs::Odometry>("odom", 1);
     markerPub = nh.advertise<visualization_msgs::Marker>("marker", 1);
-    poseArrayMotionModel = nh.advertise<geometry_msgs::PoseArray>("poseArrayMotionModel", 1);
+    poseArrayMotionModelPub = nh.advertise<geometry_msgs::PoseArray>("poseArrayMotionModel", 1);
+    initialParticlesPub = nh.advertise<geometry_msgs::PoseArray>("initialParticles", 10000);
 }
 
 Visualizer::Visualizer::~Visualizer() {}
@@ -26,7 +27,7 @@ void Visualizer::Visualizer::publishPose(const geometry_msgs::Pose &pose, bool p
 
 void Visualizer::Visualizer::publishPoseArray(geometry_msgs::PoseArray &poseArray, bool printPoseArray)
 {
-    poseArray.header.frame_id = "map"; // der relevante Frame, typischerweise "map" oder "odom"
+    poseArray.header.frame_id = "map";
 
     poseArrayPub.publish(poseArray);
 
@@ -83,7 +84,22 @@ void Visualizer::Visualizer::publishPoseArrayFromMotionModel(geometry_msgs::Pose
 {
     poseArray.header.frame_id = "map"; // der relevante Frame, typischerweise "map" oder "odom"
 
-    poseArrayMotionModel.publish(poseArray);
+    poseArrayMotionModelPub.publish(poseArray);
+
+    if (printPoseArray)
+    {
+        for (int i = 0; i < poseArray.poses.size(); ++i)
+        {
+            ROS_INFO("PoseArray[%d]: %f, %f, %f", i, poseArray.poses[i].position.x, poseArray.poses[i].position.y, tf::getYaw(poseArray.poses[i].orientation));
+        }
+    }
+}
+
+void Visualizer::Visualizer::publishInitialParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray)
+{
+    poseArray.header.frame_id = "map";
+    
+    initialParticlesPub.publish(poseArray);
 
     if (printPoseArray)
     {
