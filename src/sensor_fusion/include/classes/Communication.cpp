@@ -11,7 +11,7 @@ namespace Communication
     // Publisher class definitions
     Publisher::Publisher(ros::NodeHandle &nodehandler) : Communication(nodehandler)
     {
-        twistPub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);
+        twistPub = nh.advertise<geometry_msgs::Twist>("cmd_vel_particle_filter", 10);
         posePub = nh.advertise<geometry_msgs::Pose>("pose", 10);
     }
 

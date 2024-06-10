@@ -97,9 +97,13 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     int i = 0;
 
+    publisher.publishTwist(motionCommand);
+
     for (auto &particle : updatedParticles)
     {
         // // Sample Motion Model
+        ROS_INFO(" Motion Command: %f, %f", motionCommand.linear.x, motionCommand.angular.z);
+
         geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, particle.pose);
 
         // std::cout << "Sampled Pose " << i << " : "<< sampledPose.position.x << ", " << sampledPose.position.y << ", " << tf::getYaw(sampledPose.orientation) << std::endl;

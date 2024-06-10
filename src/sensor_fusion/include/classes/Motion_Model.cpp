@@ -41,7 +41,7 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     theta = theta + w_hat * dt + gamma_hat * dt;
     sampledPose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
-    ROS_INFO("Sampled Pose: %f, %f, %f", sampledPose.position.x, sampledPose.position.y, tf::getYaw(sampledPose.orientation));
+    // ROS_INFO("Sampled Pose: %f, %f, %f", sampledPose.position.x, sampledPose.position.y, tf::getYaw(sampledPose.orientation));
 
     return sampledPose;
 }
