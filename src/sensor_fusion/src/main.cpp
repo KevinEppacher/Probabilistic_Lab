@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 
     nav_msgs::OccupancyGrid map = subscriber.getMap();
 
-    ParticleFilter particleFilter(nh, 100);
+    ParticleFilter particleFilter(nh, 10);
 
     std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
     ros::spinOnce();

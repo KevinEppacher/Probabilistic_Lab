@@ -95,18 +95,22 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
 
+    int i = 0;
+
     for (auto &particle : updatedParticles)
     {
         // // Sample Motion Model
         geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, particle.pose);
 
+        // std::cout << "Sampled Pose " << i << " : "<< sampledPose.position.x << ", " << sampledPose.position.y << ", " << tf::getYaw(sampledPose.orientation) << std::endl;
+
         poseArrayAfterMotionModel.poses.push_back(sampledPose);
+
+        i += 1;
 
     }
 
-    // Fehler ausgeben von poseArrayAfterMotionModel vom jetzigen PoseArray zur vorherigen PoseArray
-
-    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
+    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
 
     // geometry_msgs::PoseArray updatedParticleArray = convertParticlesToPoseArray(updatedParticles);
 
