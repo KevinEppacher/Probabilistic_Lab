@@ -9,8 +9,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "localization_node");
     ros::NodeHandle nh;
 
-    ros::Rate loop_rate(1);
-    ros::Rate initalRate(0.1);
+    ros::Rate loop_rate(100);
 
     // Setup
     State robotState(0, 0, 0);
@@ -19,21 +18,34 @@ int main(int argc, char **argv)
 
     nav_msgs::OccupancyGrid map = subscriber.getMap();
 
-    ParticleFilter particleFilter(nh, 10);
+    ParticleFilter particleFilter(nh, 100);
 
+    std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
 
     while (ros::ok())
     {
-    std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
         geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);
         nav_msgs::Odometry odom = subscriber.getOdom(false);
         geometry_msgs::Pose currentPose = odom.pose.pose;
         sensor_msgs::LaserScan laserMeasurement = subscriber.getLaser(false);
 
-        motionCommand.linear.x = 0.1;
-        motionCommand.angular.z = 0.1;
+        for( auto& particle : particles)
+        {
+            particle.pose = currentPose;
+        }
 
-        particleFilter.estimatePoseWithMCL(particles, motionCommand, laserMeasurement, map);
+        std::vector<Particle> updatedParticles = particleFilter.estimatePoseWithMCL(particles, motionCommand, laserMeasurement, map);
+
+        ROS_INFO("Updated Particles: %lu", updatedParticles.size());
+
+        particles = updatedParticles;
+
+        // for(auto &particle : updatedParticles)
+        // {
+        //     particles.push_back(particle);
+        // }
+
+        // ROS_INFO("Particles: %lu", particles.size());
 
         ros::spinOnce();
         loop_rate.sleep();

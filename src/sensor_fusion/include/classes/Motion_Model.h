@@ -9,6 +9,8 @@
 #include <tf/transform_datatypes.h>
 #include <cmath>
 
+#include "Functions.h"
+
 class MotionModel 
 {
 public:
@@ -24,8 +26,7 @@ public:
 private:
     double alpha1, alpha2, alpha3, alpha4, alpha5, alpha6;
     double v_hat, w_hat, v, w, gamma_hat, theta, dt;
-    geometry_msgs::Pose sampledPose;
-
+    mutable std::mt19937 gen;
 
 };
 

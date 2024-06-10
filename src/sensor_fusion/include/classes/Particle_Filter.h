@@ -19,6 +19,7 @@
 #include "Motion_Model.h"
 #include "Communication.h"
 #include "Visualizer.h"
+#include "Functions.h"
 
 //Include Structs
 #include "../structs/States.h"
@@ -42,6 +43,9 @@ public:
 
     geometry_msgs::PoseArray convertParticlesToPoseArray(const std::vector<Particle> &particles);
 
+    bool isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map);
+
+    std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid &map);
 private:
     Particle particle;
     int quantityParticles;
@@ -50,8 +54,6 @@ private:
     Communication::Subscriber subscriber;
     Visualizer::Visualizer visualizer;
     MotionModel motionModel;
-
-    std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid& map);
 
     float randomOrientation(std::mt19937 &gen);
 
