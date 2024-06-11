@@ -69,5 +69,11 @@
         "variant": "cpp",
         "csignal": "cpp"
     },
-    "cmake.sourceDirectory": "/Probabilistic_Lab/src/sensor_fusion"  
+    "cmake.sourceDirectory": "/Probabilistic_Lab/src/sensor_fusion",
+    "python.autoComplete.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
 }

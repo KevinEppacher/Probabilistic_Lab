@@ -35,6 +35,7 @@ add_library(sensor_fusion_lib
   include/classes/Motion_Model.cpp
   include/classes/Communication.cpp
   include/classes/Visualizer.cpp
+  include/classes/Sensor_Model.cpp
 )
 
 ############################################################ CMakelist for main node ############################################################
