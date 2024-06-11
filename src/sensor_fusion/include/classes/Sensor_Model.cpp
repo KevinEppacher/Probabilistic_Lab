@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-Sensor_Model::Sensor_Model()
+SensorModel::SensorModel()
 {
     // Initialize the parameters
     z_hit = 0.8;
@@ -11,12 +11,12 @@ Sensor_Model::Sensor_Model()
     z_rand = 0.05;
 }
 
-Sensor_Model::~Sensor_Model()
+SensorModel::~SensorModel()
 {
     // Destructor implementation
 }
 
-double Sensor_Model::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
+double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
 {
     double q = 1.0;
 
@@ -27,10 +27,7 @@ double Sensor_Model::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, 
         double z_k = z_t.ranges[k];
         double z_star = z_k; // Ray casting result should be computed here
 
-        double p = z_hit * p_hit(z_k, z_star, x_t, m) +
-                   z_short * p_short(z_k, z_star) +
-                   z_max * p_max(z_k, z_t.range_max) +
-                   z_rand * p_rand(z_k, z_t.range_max);
+        double p = z_hit * p_hit(z_k, z_star, x_t, m) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_t.range_max) + z_rand * p_rand(z_k, z_t.range_max);
 
         q *= p;
     }
@@ -38,7 +35,7 @@ double Sensor_Model::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, 
     return q;
 }
 
-double Sensor_Model::p_hit(double z_k, double z_star, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
+double SensorModel::p_hit(double z_k, double z_star, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
 {
     // Probability of a hit
     double sigma_hit = 0.2; // Standard deviation of the measurement noise
@@ -47,7 +44,7 @@ double Sensor_Model::p_hit(double z_k, double z_star, const geometry_msgs::Pose 
     return expo / denom;
 }
 
-double Sensor_Model::p_short(double z_k, double z_star)
+double SensorModel::p_short(double z_k, double z_star)
 {
     // Probability of a short reading
     if (z_k < 0 || z_k > z_star)
@@ -56,14 +53,20 @@ double Sensor_Model::p_short(double z_k, double z_star)
     return lambda_short * exp(-lambda_short * z_k);
 }
 
-double Sensor_Model::p_max(double z_k, double z_max)
+double SensorModel::p_max(double z_k, double z_max)
 {
     // Probability of a max range reading
     return z_k == z_max ? 1.0 : 0.0;
 }
 
-double Sensor_Model::p_rand(double z_k, double z_max)
+double SensorModel::p_rand(double z_k, double z_max)
 {
     // Probability of a random measurement
     return (z_k >= 0 && z_k <= z_max) ? 1.0 / z_max : 0.0;
+}
+
+double SensorModel::rayCasting(const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m, double angle)
+{
+    // Ray casting implementation
+    return 0.0;
 }

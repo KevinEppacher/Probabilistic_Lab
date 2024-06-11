@@ -3,6 +3,7 @@
 
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseArray.h>
 #include <nav_msgs/OccupancyGrid.h>
@@ -20,7 +21,9 @@
 #include <string>
 #include <cmath>
 
+// Custom Structs
 #include "../structs/Particle.h"
+#include "../structs/Ray.h"
 
 namespace Visualizer
 {
@@ -40,10 +43,7 @@ namespace Visualizer
         // Custom Pose Arrays(delete these Methdos if not needed)
         void publishInitialParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray);
         void publishPoseArrayFromMotionModel(geometry_msgs::PoseArray &poseArray, bool printPoseArray = false);
-
-        
-
-
+        void publishRay(std::vector<Ray>& lines);
 
     private:
         ros::NodeHandle nh;
@@ -57,7 +57,7 @@ namespace Visualizer
         // Custom Pose Arrays(delete these Methdos if not needed)
         ros::Publisher poseArrayMotionModelPub;
         ros::Publisher initialParticlesPub;
-
+        ros::Publisher raysPub;
     };
 } // namespace Visualizer
 

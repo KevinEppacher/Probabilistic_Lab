@@ -77,7 +77,7 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
     int i = 0;
     for (auto &particle : particles)
     {
-        ROS_INFO("Particle %d", i++);
+        // ROS_INFO("Particle %d", i++);
         geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, particle.pose);
 
         // ROS_INFO("Sampled Pose: %f, %f, %f", sampledPose.position.x, sampledPose.position.y, sampledPose.orientation.z);

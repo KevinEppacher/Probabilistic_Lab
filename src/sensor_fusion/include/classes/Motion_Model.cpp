@@ -37,7 +37,7 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
 
     gamma_hat = sample(alpha5 * std::abs(v) + alpha6 * std::abs(w));
 
-    ROS_INFO(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
+    // ROS_INFO(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
 
     if(fabs(w_hat) > 1e-5) // Avoid division by zero
     {
@@ -54,7 +54,7 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     theta = theta + w_hat * dt + gamma_hat * dt;
     currentPose.orientation = tf::createQuaternionMsgFromYaw(normalize_angle_positive(theta));
 
-    ROS_INFO("Sampled Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, tf::getYaw(currentPose.orientation));
+    // ROS_INFO("Sampled Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, tf::getYaw(currentPose.orientation));
 
     return currentPose;
 }
