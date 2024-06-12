@@ -10,10 +10,15 @@ Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler) : nh(nodehandle
     markerPub = nh.advertise<visualization_msgs::Marker>("marker", 1);
     poseArrayMotionModelPub = nh.advertise<geometry_msgs::PoseArray>("poseArrayMotionModel", 1);
     initialParticlesPub = nh.advertise<geometry_msgs::PoseArray>("initialParticles", 1);
-    raysPub = nh.advertise<visualization_msgs::MarkerArray>("laser_rays", 1);
+    realRaysPub = nh.advertise<visualization_msgs::MarkerArray>("real_laser_rays", 1);
+    simRaysPub = nh.advertise<visualization_msgs::MarkerArray>("sim_laser_rays", 1);
+
 }
 
-Visualizer::Visualizer::~Visualizer() {}
+Visualizer::Visualizer::~Visualizer() 
+{
+ 
+}
 
 void Visualizer::Visualizer::publishPose(const geometry_msgs::Pose &pose, bool printPose)
 {
@@ -98,7 +103,7 @@ void Visualizer::Visualizer::publishPoseArrayFromMotionModel(geometry_msgs::Pose
 void Visualizer::Visualizer::publishInitialParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray)
 {
     poseArray.header.frame_id = "map";
-    
+
     initialParticlesPub.publish(poseArray);
 
     if (printPoseArray)
@@ -110,10 +115,35 @@ void Visualizer::Visualizer::publishInitialParticles(geometry_msgs::PoseArray &p
     }
 }
 
-
-void Visualizer::Visualizer::publishRay(std::vector<Ray>& rays)
+visualization_msgs::MarkerArray Visualizer::Visualizer::calcLaserRayArray(std::vector<Ray> &rays, double percent, visualization_msgs::Marker laserRay)
 {
     visualization_msgs::MarkerArray laserRayArray;
+
+    // Determine step size based on the desired percentage
+    int step = std::max(1, static_cast<int>(rays.size() * percent / 100));
+
+    for (int i = 0; i < rays.size(); i += step)
+    {
+        if (std::isfinite(rays[i].angle) && std::isfinite(rays[i].length))
+        {
+            laserRay.id = i;
+            // Define the end point of the line based on the angle and length
+            rays[i].end.x = rays[i].origin.x + rays[i].length * cos(rays[i].angle);
+            rays[i].end.y = rays[i].origin.y + rays[i].length * sin(rays[i].angle);
+            rays[i].end.z = rays[i].origin.z;
+
+            laserRay.points.push_back(rays[i].origin);
+            laserRay.points.push_back(rays[i].end);
+
+            laserRayArray.markers.push_back(laserRay);
+        }
+    }
+    return laserRayArray;
+}
+
+
+void Visualizer::Visualizer::publishRealRay(std::vector<Ray> &rays, double percent)
+{
     visualization_msgs::Marker laserRay;
     laserRay.header.frame_id = "map";
     laserRay.header.stamp = ros::Time::now();
@@ -125,63 +155,54 @@ void Visualizer::Visualizer::publishRay(std::vector<Ray>& rays)
     laserRay.color.g = 0.0;
     laserRay.color.b = 0.0;
     laserRay.color.a = 1.0;
+    laserRay.scale.x = 0.005; // Line width
 
-    for(int i = 0; i < rays.size(); ++i)
-    {
-        laserRay.id = i;
+    visualization_msgs::MarkerArray laserRayArray = calcLaserRayArray(rays, percent, laserRay);
 
-        laserRay.scale.x = 0.01; // Line width
-
-
-
-        // Define the end point of the line based on the angle and length
-        rays[i].end.x = rays[i].origin.x + rays[i].length * cos(rays[i].angle);
-        rays[i].end.y = rays[i].origin.y + rays[i].length * sin(rays[i].angle);
-        rays[i].end.z = rays[i].origin.z;
-
-        laserRay.points.push_back(rays[i].origin);
-        laserRay.points.push_back(rays[i].end);
-
-        laserRayArray.markers.push_back(laserRay);
-
-    }
-
-    raysPub.publish(laserRayArray);
-
-
-
-
-
-    // visualization_msgs::MarkerArray marker_array;
-
-    // for (int i = 0; i < rays.size(); ++i)
-    // {
-    //     visualization_msgs::Marker line;
-    //     line.header.frame_id = "map";
-    //     line.header.stamp = ros::Time::now();
-    //     line.ns = "lines";
-    //     line.action = visualization_msgs::Marker::ADD;
-    //     line.pose.orientation.w = 1.0;
-
-    //     line.id = i;
-    //     line.type = visualization_msgs::Marker::LINE_STRIP;
-
-    //     line.scale.x = 0.1; // Line width
-
-    //     line.color.b = 1.0;
-    //     line.color.a = 1.0;
-
-    //     // Define the end point of the line based on the angle and length
-    //     geometry_msgs::Point end_point;
-    //     end_point.x = rays[i].origin.x + rays[i].length * cos(rays[i].angle);
-    //     end_point.y = rays[i].origin.y + rays[i].length * sin(rays[i].angle);
-    //     end_point.z = rays[i].origin.z;
-
-    //     line.points.push_back(rays[i].origin);
-    //     line.points.push_back(end_point);
-
-    //     marker_array.markers.push_back(line);
-    // }
-
-    // raysPub.publish(marker_array);
+    realRaysPub.publish(laserRayArray);
 }
+
+void Visualizer::Visualizer::publishSimRay(std::vector<Ray> &rays, double percent)
+{
+    visualization_msgs::Marker laserRay;
+    laserRay.header.frame_id = "map";
+    laserRay.header.stamp = ros::Time::now();
+    laserRay.ns = "rays";
+    laserRay.action = visualization_msgs::Marker::ADD;
+    laserRay.type = visualization_msgs::Marker::LINE_STRIP;
+    laserRay.pose.orientation.w = 1;
+    laserRay.color.r = 0.0;
+    laserRay.color.g = 0.0;
+    laserRay.color.b = 1.0;
+    laserRay.color.a = 1.0;
+    laserRay.scale.x = 0.005; // Line width
+
+    visualization_msgs::MarkerArray laserRayArray = calcLaserRayArray(rays, percent, laserRay);
+
+    simRaysPub.publish(laserRayArray);
+}
+
+// void Visualizer::Visualizer::publishParticleRays(std::vector<Particle> particles, double percent)
+// {
+//     for(auto& particle : particles)
+//     {
+//         visualization_msgs::MarkerArray laserRayArray = calcLaserRayArray(particle.rays, percent);
+//         realRaysPub.publish(laserRayArray);
+//     }
+// }
+
+void Visualizer::Visualizer::clearMarkers()
+{
+    visualization_msgs::MarkerArray clearMarkerArray;
+    visualization_msgs::Marker clearMarker;
+    clearMarker.header.frame_id = "map";
+    clearMarker.header.stamp = ros::Time::now();
+    clearMarker.ns = "rays";                                    
+    clearMarker.action = visualization_msgs::Marker::DELETEALL;
+    clearMarkerArray.markers.push_back(clearMarker);
+    // Publish the clear marker
+    realRaysPub.publish(clearMarkerArray);
+    simRaysPub.publish(clearMarkerArray);
+    ROS_INFO("Cleared all markers");
+}
+

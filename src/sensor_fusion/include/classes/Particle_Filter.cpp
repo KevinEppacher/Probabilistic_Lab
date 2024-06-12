@@ -4,7 +4,8 @@ ParticleFilter::ParticleFilter(ros::NodeHandle &nodehandler, int quantityParticl
                                                                                       subscriber(nh),
                                                                                       visualizer(nh),
                                                                                       quantityParticles(quantityParticles),
-                                                                                      motionModel(nh)
+                                                                                      motionModel(nh),
+                                                                                      sensorModel(nh)
 {
     // Communication::Publisher publisher(nh);
 }
@@ -74,13 +75,13 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
 
-    int i = 0;
+    // SensorModel sensorModel;
+
+    double weight;
+
     for (auto &particle : particles)
     {
-        // ROS_INFO("Particle %d", i++);
         geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, particle.pose);
-
-        // ROS_INFO("Sampled Pose: %f, %f, %f", sampledPose.position.x, sampledPose.position.y, sampledPose.orientation.z);
 
         if (isPoseInFreeCell(sampledPose, map))
         {
@@ -90,6 +91,8 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
             poseArrayAfterMotionModel.poses.push_back(sampledPose);
         }
+
+        weight = sensorModel.beam_range_finder_model(sensorMeasurement, sampledPose, map);
     }
 
     std::cout<<std::endl;

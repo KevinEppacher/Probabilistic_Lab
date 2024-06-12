@@ -1,6 +1,8 @@
 <launch>
     <!-- Launch the main node -->
     <node name="main" pkg="sensor_fusion" type="main" output="screen" />
-        <rosparam file="$(find sensor_fusion)/param/motion_model_params.yaml" command="load"/>
+        <rosparam file="$(find sensor_fusion)/param/particle_filter_param/motion_model_params.yaml" command="load"/>
+        <rosparam file="$(find sensor_fusion)/param/particle_filter_param/sensor_model_params.yaml" command="load"/>
+        <rosparam file="$(find sensor_fusion)/param/particle_filter_param/general_params.yaml" command="load"/>
 
 </launch>

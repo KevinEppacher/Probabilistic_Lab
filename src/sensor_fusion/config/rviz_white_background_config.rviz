@@ -6,7 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /LaserScan1
+        - /MarkerArray2
       Splitter Ratio: 0.5
     Tree Height: 725
   - Class: rviz/Selection
@@ -352,6 +352,22 @@ Visualization Manager:
                   {}
       Update Interval: 0
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /laser_rays
+      Name: MarkerArray
+      Namespaces:
+        rays: true
+      Queue Size: 1
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /sim_laser_rays
+      Name: MarkerArray
+      Namespaces:
+        rays: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -389,10 +405,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 219.19143676757812
+      Scale: 92.70685577392578
       Target Frame: <Fixed Frame>
-      X: 1.3339929580688477
-      Y: 0.753605306148529
+      X: 3.835411548614502
+      Y: 2.2919747829437256
     Saved: ~
 Window Geometry:
   Displays:

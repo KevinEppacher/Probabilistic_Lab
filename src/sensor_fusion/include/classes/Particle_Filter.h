@@ -20,10 +20,12 @@
 #include "Communication.h"
 #include "Visualizer.h"
 #include "Functions.h"
+#include "Sensor_Model.h"
 
 //Include Structs
 #include "../structs/States.h"
 #include "../structs/Particle.h"
+#include "../structs/Ray.h"
 
 
 class ParticleFilter 
@@ -54,6 +56,7 @@ private:
     Communication::Subscriber subscriber;
     Visualizer::Visualizer visualizer;
     MotionModel motionModel;
+    SensorModel sensorModel;
 
     float randomOrientation(std::mt19937 &gen);
 

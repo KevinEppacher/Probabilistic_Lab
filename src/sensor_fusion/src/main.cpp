@@ -4,13 +4,19 @@
 #include "Motion_Model.h"
 #include "Communication.h"
 #include "Sensor_Model.h"
+#include "Visualizer.h"
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "localization_node");
     ros::NodeHandle nh;
 
-    ros::Rate loop_rate(1);
+    double loop_frequency;
+    int numParticles;
+    nh.getParam("loop_rate", loop_frequency);
+    nh.getParam("num_particles", numParticles);
+
+    ros::Rate loop_rate(loop_frequency);
 
     // Setup
     State robotState(0, 0, 0);
@@ -19,32 +25,13 @@ int main(int argc, char **argv)
 
     nav_msgs::OccupancyGrid map = subscriber.getMap();
 
-    ParticleFilter particleFilter(nh, 10);
+    ParticleFilter particleFilter(nh, numParticles);
 
     std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
 
-    std::vector<Ray> rays;
-
-    for (int i = 0; i < 4; i++)
-    {
-        Ray ray;
-        ray.origin.x = 2;
-        ray.origin.y = 1;
-        ray.origin.z = 0;
-        ray.angle = M_PI/4 + i * 7,5;
-        ray.length = 2;
-        
-        rays.push_back(ray);
-    }
-    
 
     while (ros::ok())
     {
-
-        Visualizer::Visualizer viz(nh);
-        viz.publishRay(rays);
-
-
         geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);
         sensor_msgs::LaserScan laserMeasurement = subscriber.getLaser(false);
 
@@ -57,6 +44,9 @@ int main(int argc, char **argv)
         ros::spinOnce();
         loop_rate.sleep();
     }
+
+    Visualizer::Visualizer visualizer(nh);
+    visualizer.clearMarkers();
 
     return 0;
 }

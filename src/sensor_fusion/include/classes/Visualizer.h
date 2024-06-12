@@ -43,9 +43,15 @@ namespace Visualizer
         // Custom Pose Arrays(delete these Methdos if not needed)
         void publishInitialParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray);
         void publishPoseArrayFromMotionModel(geometry_msgs::PoseArray &poseArray, bool printPoseArray = false);
-        void publishRay(std::vector<Ray>& lines);
+        void publishRealRay(std::vector<Ray>& rays, double percent);
+        void publishSimRay(std::vector<Ray>& rays, double percent);
+        void publishParticleRays(std::vector<Particle> particles, double percent);
+        void clearMarkers();
 
     private:
+        visualization_msgs::MarkerArray calcLaserRayArray(std::vector<Ray> &rays, double percent, visualization_msgs::Marker laserRay);
+
+
         ros::NodeHandle nh;
         ros::Publisher posePub;
         ros::Publisher poseArrayPub;
@@ -57,7 +63,7 @@ namespace Visualizer
         // Custom Pose Arrays(delete these Methdos if not needed)
         ros::Publisher poseArrayMotionModelPub;
         ros::Publisher initialParticlesPub;
-        ros::Publisher raysPub;
+        ros::Publisher realRaysPub, simRaysPub;
     };
 } // namespace Visualizer
 

@@ -1,0 +1,5 @@
+z_hit: 0.8
+z_short: 0.1
+z_max: 0.1
+z_rand: 0.1
+visualize_rays_percentage: 5
