@@ -6,6 +6,13 @@
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/Pose.h>
 #include <ros/ros.h>
+#include <dynamic_reconfigure/server.h>
+#include <mutex>
+
+// Dynamic Reconfigure Config File
+// #include <sensor_fusion/Sensor_ModelConfig.h>
+// #include <eppacher_hw2/dynamic_reconfigure_param_2Config.h>
+
 
 // Custom classes
 #include "Visualizer.h"
@@ -35,6 +42,7 @@ private:
     Communication::Subscriber subscriber;
     double visualizeRaysPercentage = 5;     // Percentage of rays to visualize
 
+    // dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig> server;
 
     // Parameters for the sensor model
     double z_hit;   double sigma_hit;

@@ -47,6 +47,8 @@ namespace Visualizer
         void publishSimRay(std::vector<Ray>& rays, double percent);
         void publishParticleRays(std::vector<Particle> particles, double percent);
         void clearMarkers();
+        void publishResampledParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray);
+
 
     private:
         visualization_msgs::MarkerArray calcLaserRayArray(std::vector<Ray> &rays, double percent, visualization_msgs::Marker laserRay);
@@ -61,8 +63,7 @@ namespace Visualizer
         ros::Publisher markerPub;
 
         // Custom Pose Arrays(delete these Methdos if not needed)
-        ros::Publisher poseArrayMotionModelPub;
-        ros::Publisher initialParticlesPub;
+        ros::Publisher poseArrayMotionModelPub, initialParticlesPub, resampledParticlesPub;
         ros::Publisher realRaysPub, simRaysPub;
     };
 } // namespace Visualizer

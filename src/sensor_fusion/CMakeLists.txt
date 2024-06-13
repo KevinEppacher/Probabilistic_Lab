@@ -20,8 +20,12 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
 )
 
-# Declare a catkin package
-catkin_package()
+## Declare catkin package
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS roscpp rospy std_msgs dynamic_reconfigure
+)
 
 # Include directories for catkin
 include_directories(${catkin_INCLUDE_DIRS})
@@ -37,6 +41,10 @@ add_library(sensor_fusion_lib
   include/classes/Visualizer.cpp
   include/classes/Sensor_Model.cpp
 )
+
+# generate_dynamic_reconfigure_options(
+#   cfg/Sensor_Model.cfg
+#  )
 
 ############################################################ CMakelist for main node ############################################################
 # Include directories for structs

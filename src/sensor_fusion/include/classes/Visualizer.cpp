@@ -12,6 +12,7 @@ Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler) : nh(nodehandle
     initialParticlesPub = nh.advertise<geometry_msgs::PoseArray>("initialParticles", 1);
     realRaysPub = nh.advertise<visualization_msgs::MarkerArray>("real_laser_rays", 1);
     simRaysPub = nh.advertise<visualization_msgs::MarkerArray>("sim_laser_rays", 1);
+    resampledParticlesPub = nh.advertise<geometry_msgs::PoseArray>("resampled_particles", 1);
 
 }
 
@@ -101,6 +102,21 @@ void Visualizer::Visualizer::publishPoseArrayFromMotionModel(geometry_msgs::Pose
 }
 
 void Visualizer::Visualizer::publishInitialParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray)
+{
+    poseArray.header.frame_id = "map";
+
+    initialParticlesPub.publish(poseArray);
+
+    if (printPoseArray)
+    {
+        for (int i = 0; i < poseArray.poses.size(); ++i)
+        {
+            ROS_INFO("PoseArray[%d]: %f, %f, %f", i, poseArray.poses[i].position.x, poseArray.poses[i].position.y, tf::getYaw(poseArray.poses[i].orientation));
+        }
+    }
+}
+
+void Visualizer::Visualizer::publishResampledParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray)
 {
     poseArray.header.frame_id = "map";
 

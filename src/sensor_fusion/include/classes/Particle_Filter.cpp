@@ -103,31 +103,65 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
 
-    // for (auto &particle : updatedParticles)
-    // {
-    //     particle.weight /= totalWeights;
-    // }
+    // Normalize weights
+    if (totalWeights == 0.0)
+    {
+        ROS_WARN("Total weight is zero. This may indicate a problem with the weight calculation.");
+        return particles; // Return the original particles to avoid further issues
+    }
 
     for(int i = 0; i < updatedParticles.size(); i++)
     {
         updatedParticles[i].weight /= totalWeights;
     }
 
-    for (auto &particle : updatedParticles)
-    {
-        ROS_INFO("Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
-    }
+    // for (auto &particle : updatedParticles)
+    // {
+    //     ROS_INFO("Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
+    // }
 
     // Resample particles based on their weights
     std::vector<Particle> resampleParticles = ParticleFilter::resampleParticles(updatedParticles);
 
     for(auto& particle : resampleParticles)
     {
-        // ROS_INFO("Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
+        ROS_INFO("Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
     }
 
-    return updatedParticles;
+    geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(resampleParticles);
+
+    visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
+
+    return resampleParticles;
 }
+
+std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Particle> &particles)
+{
+    std::vector<Particle> resampledParticles;
+    std::vector<double> weights;
+    double totalWeights = 0.0;
+
+    for(auto& particle : particles)
+    {
+        weights.push_back(particle.weight);
+        totalWeights += particle.weight;
+    }
+
+    // ROS_INFO("totalWeights: %f", totalWeights);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<int> distrib(weights.begin(), weights.end());
+
+    for(int i = 0; i < particles.size(); i++)
+    {
+        int index = distrib(gen);
+        resampledParticles.push_back(particles[index]);
+    }
+
+    return resampledParticles;
+}
+
 
 bool ParticleFilter::isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map)
 {
@@ -160,40 +194,4 @@ std::vector<std::pair<float, float>> ParticleFilter::findFreeCells(const nav_msg
         }
     }
     return free_cells;
-}
-
-std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Particle> &particles)
-{
-    std::vector<Particle> resampledParticles;
-    resampledParticles.reserve(particles.size());
-
-    // Compute the cumulative weights
-    std::vector<double> cumulativeWeights(particles.size(), 0.0);
-    cumulativeWeights[0] = particles[0].weight;
-    for (size_t i = 1; i < particles.size(); ++i)
-    {
-        cumulativeWeights[i] = cumulativeWeights[i - 1] + particles[i].weight;
-    }
-
-    // Generate a random start point
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0 / particles.size());
-    double start = dis(gen);
-
-    // Resample the particles
-    size_t index = 0;
-    for (size_t i = 0; i < particles.size(); ++i)
-    {
-        double target = start + i * (1.0 / particles.size());
-        while (target > cumulativeWeights[index])
-        {
-            index++;
-        }
-        resampledParticles.push_back(particles[index]);
-
-        // ROS_INFO(" Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particles[index].pose.position.x, particles[index].pose.position.y, particles[index].pose.orientation.z, particles[index].weight);
-    }
-
-    return resampledParticles;
 }

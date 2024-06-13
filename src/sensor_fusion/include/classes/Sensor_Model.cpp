@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(nodehandler), subscriber(nodehandler)
+SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(nodehandler), subscriber(nodehandler)//, server(mutex)
 {
     // Initialize the parameters
     nh.getParam("sensor_model/z_hit", z_hit);
@@ -48,8 +48,15 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
         // ROS_INFO("p: %f", p);
 
+        if(p == 0)
+        {
+            ROS_WARN("p is zero");
+        }
+
         q = q * p;
     }
+
+    ROS_INFO(" q: %f", q);
 
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
