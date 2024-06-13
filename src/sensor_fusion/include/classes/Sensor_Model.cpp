@@ -5,16 +5,18 @@
 SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(nodehandler), subscriber(nodehandler)
 {
     // Initialize the parameters
-    nh.getParam("z_hit", z_hit);
-    nh.getParam("z_short", z_short);
-    nh.getParam("z_max", z_max);
-    nh.getParam("z_rand", z_rand);
-    nh.getParam("visualize_rays_percentage", visualizeRaysPercentage);
+    nh.getParam("sensor_model/z_hit", z_hit);
+    nh.getParam("sensor_model/z_short", z_short);
+    nh.getParam("sensor_model/z_max", z_max);
+    nh.getParam("sensor_model/z_rand", z_rand);
+    nh.getParam("sensor_model/visualize_rays_percentage", visualizeRaysPercentage);
+    nh.getParam("sensor_model/sigma_hit", sigma_hit);
+    nh.getParam("sensor_model/lambda_short", lambda_short);
 }
 
 SensorModel::~SensorModel()
 {
-    // Destructor implementation
+
 }
 
 double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
@@ -25,8 +27,9 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
     int K = z_t.ranges.size();
 
+    z_max = z_t.range_max;
+
     std::vector<Ray> measuredRay;
-    ;
 
     nav_msgs::Odometry odom = subscriber.getOdom();
     geometry_msgs::Pose odomPose = odom.pose.pose;
@@ -43,14 +46,16 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
         double p = z_hit * p_hit(z_k, z_star, x_t, m) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_t.range_max) + z_rand * p_rand(z_k, z_t.range_max);
 
-        q *= p;
+        // ROS_INFO("p: %f", p);
+
+        q = q * p;
     }
 
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
     viz.publishRealRay(measuredRay, visualizeRaysPercentage);
 
-    ROS_INFO("q: %f", q);
+    // ROS_INFO("q: %f", q);
 
     return q;
 }
@@ -77,42 +82,79 @@ std::vector<Ray> SensorModel::convertScanToRays(const sensor_msgs::LaserScan &z_
 
 double SensorModel::p_hit(double z_k, double z_star, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
 {
-
     if (0 <= z_k <= z_max)
     {
-        /* code */
+        double normalization = numericalIntegration(z_star, z_max, 100);
+
+        double p = normalDistribution(z_k, z_star) / normalization;
+
+        return p;
     }
     else
     {
         return 0;
     }
+}
 
-    // Probability of a hit
-    double sigma_hit = 0.2; // Standard deviation of the measurement noise
-    double denom = sqrt(2 * M_PI * sigma_hit * sigma_hit);
-    double expo = exp(-0.5 * pow((z_k - z_star) / sigma_hit, 2));
-    return expo / denom;
+// Normal distribution function
+double SensorModel::normalDistribution(double x, double mean)
+{
+    double deviation = x - mean;                                    // Calculate the deviation from the mean
+
+    double exponent = -0.5 * pow(deviation, 2) / pow(sigma_hit, 2); // Calculate the exponent part of the normal distribution formula
+
+    double gaussian = exp(exponent);                                // Compute the exponential term
+
+    double normalization = 1.0 / (sqrt(2 * M_PI) * sigma_hit);      // Compute the normalization factor
+
+    return normalization * gaussian; // Return the probability value
+}
+
+// Numerical integration using the trapezoidal rule
+double SensorModel::numericalIntegration(double mean, double z_max, int num_steps)
+{
+    double step_size = z_max / num_steps;
+    double integral = 0.0;
+
+    for (int i = 0; i <= num_steps; ++i)
+    {
+        double z = i * step_size;
+        double weight = (i == 0 || i == num_steps) ? 0.5 : 1.0; // Weight for trapezoidal rule
+        integral += weight * normalDistribution(z, mean);
+    }
+
+    integral *= step_size;
+    return integral;
 }
 
 double SensorModel::p_short(double z_k, double z_star)
 {
-    // Probability of a short reading
-    if (z_k < 0 || z_k > z_star)
-        return 0.0;
-    double lambda_short = 0.1;
-    return lambda_short * exp(-lambda_short * z_k);
+    if (0 <= z_k <= z_star)
+    {
+        double normaliation = 1.0 / (1.0 - exp(-lambda_short * z_star));
+        // ROS_INFO("normaliation: %f", normaliation);
+        double p = normaliation * lambda_short * exp(-lambda_short * z_k);
+        // ROS_INFO("p_short: %f", p);
+        return p;
+    }
+    else
+    {
+        return 0;
+    }
 }
+
+
 
 double SensorModel::p_max(double z_k, double z_max)
 {
-    // Probability of a max range reading
-    return z_k == z_max ? 1.0 : 0.0;
+    // (condition) ? (value if_true) : (value if_false)
+    return (z_k == z_max) ? 1.0 : 0.0;
 }
 
 double SensorModel::p_rand(double z_k, double z_max)
 {
     // Probability of a random measurement
-    return (z_k >= 0 && z_k <= z_max) ? 1.0 / z_max : 0.0;
+    return (0 <= z_k <= z_max) ? 1.0 / z_max : 0.0;
 }
 
 std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map, const sensor_msgs::LaserScan &z_t)
@@ -168,12 +210,4 @@ std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const 
     }
 
     return rays;
-}
-
-// Normalverteilungsfunktion
-double normalDistribution(double x, double mean)
-{
-    double variance = 0.2;
-    double exponent = exp(-0.5 * pow((x - mean), 2) / pow(variance, 2));
-    return (1.0 / (sqrt(2 * M_PI) * variance)) * exponent;
 }

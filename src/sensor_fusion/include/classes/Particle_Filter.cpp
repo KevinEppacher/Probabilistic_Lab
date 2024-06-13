@@ -83,21 +83,48 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
     {
         geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, particle.pose);
 
+        weight = sensorModel.beam_range_finder_model(sensorMeasurement, sampledPose, map);
+
         if (isPoseInFreeCell(sampledPose, map))
         {
             Particle updatedParticle = particle;
+
             updatedParticle.pose = sampledPose;
+
+            updatedParticle.weight = weight;
+
             updatedParticles.push_back(updatedParticle);
+
+            totalWeights += weight;
 
             poseArrayAfterMotionModel.poses.push_back(sampledPose);
         }
-
-        weight = sensorModel.beam_range_finder_model(sensorMeasurement, sampledPose, map);
     }
 
-    std::cout<<std::endl;
+    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
 
-    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
+    // for (auto &particle : updatedParticles)
+    // {
+    //     particle.weight /= totalWeights;
+    // }
+
+    for(int i = 0; i < updatedParticles.size(); i++)
+    {
+        updatedParticles[i].weight /= totalWeights;
+    }
+
+    for (auto &particle : updatedParticles)
+    {
+        ROS_INFO("Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
+    }
+
+    // Resample particles based on their weights
+    std::vector<Particle> resampleParticles = ParticleFilter::resampleParticles(updatedParticles);
+
+    for(auto& particle : resampleParticles)
+    {
+        // ROS_INFO("Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
+    }
 
     return updatedParticles;
 }
@@ -133,4 +160,40 @@ std::vector<std::pair<float, float>> ParticleFilter::findFreeCells(const nav_msg
         }
     }
     return free_cells;
+}
+
+std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Particle> &particles)
+{
+    std::vector<Particle> resampledParticles;
+    resampledParticles.reserve(particles.size());
+
+    // Compute the cumulative weights
+    std::vector<double> cumulativeWeights(particles.size(), 0.0);
+    cumulativeWeights[0] = particles[0].weight;
+    for (size_t i = 1; i < particles.size(); ++i)
+    {
+        cumulativeWeights[i] = cumulativeWeights[i - 1] + particles[i].weight;
+    }
+
+    // Generate a random start point
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 1.0 / particles.size());
+    double start = dis(gen);
+
+    // Resample the particles
+    size_t index = 0;
+    for (size_t i = 0; i < particles.size(); ++i)
+    {
+        double target = start + i * (1.0 / particles.size());
+        while (target > cumulativeWeights[index])
+        {
+            index++;
+        }
+        resampledParticles.push_back(particles[index]);
+
+        // ROS_INFO(" Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particles[index].pose.position.x, particles[index].pose.position.y, particles[index].pose.orientation.z, particles[index].weight);
+    }
+
+    return resampledParticles;
 }

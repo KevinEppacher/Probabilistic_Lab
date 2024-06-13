@@ -34,8 +34,6 @@ public:
     explicit ParticleFilter(ros::NodeHandle& nodehandler, int quantityParticles = 100);  // Default value for particles
     ~ParticleFilter();
 
-    void getNodehanlder(ros::NodeHandle& nodehandler);
-
     std::vector<Particle> initializeParticles(const State &initState, const nav_msgs::OccupancyGrid &map);
 
     std::vector<Particle> estimatePoseWithMCL(const std::vector<Particle>& particles,
@@ -43,12 +41,15 @@ public:
                                         const sensor_msgs::LaserScan& sensorMeasurement, 
                                         const nav_msgs::OccupancyGrid& map);
 
-    geometry_msgs::PoseArray convertParticlesToPoseArray(const std::vector<Particle> &particles);
+    void getNodehanlder(ros::NodeHandle& nodehandler);
 
-    bool isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map);
 
-    std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid &map);
 private:
+    geometry_msgs::PoseArray convertParticlesToPoseArray(const std::vector<Particle> &particles);
+    bool isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map);
+    std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid &map);
+    std::vector<Particle> resampleParticles(const std::vector<Particle>& particles);
+
     Particle particle;
     int quantityParticles;
     ros::NodeHandle nh;

@@ -27,6 +27,8 @@ private:
     double p_rand(double z_k, double z_max);
     std::vector<Ray> rayCasting(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map, const sensor_msgs::LaserScan &z_t);
     std::vector<Ray> convertScanToRays(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &pose);
+    double normalDistribution(double x, double mean);
+    double numericalIntegration(double mean, double z_max, int num_steps);
 
     ros::NodeHandle nh;
     Visualizer::Visualizer viz;
@@ -35,8 +37,8 @@ private:
 
 
     // Parameters for the sensor model
-    double z_hit;
-    double z_short;
+    double z_hit;   double sigma_hit;
+    double z_short; double lambda_short;
     double z_max;
     double z_rand;
 };

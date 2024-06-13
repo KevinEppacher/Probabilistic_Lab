@@ -29,7 +29,6 @@ int main(int argc, char **argv)
 
     std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
 
-
     while (ros::ok())
     {
         geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);

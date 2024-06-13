@@ -5,7 +5,8 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Status1
+        - /Map1
+        - /MarkerArray1
         - /MarkerArray2
       Splitter Ratio: 0.5
     Tree Height: 725
@@ -104,7 +105,7 @@ Visualization Manager:
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
-      Draw Behind: false
+      Draw Behind: true
       Enabled: true
       Name: Map
       Topic: /map
@@ -354,7 +355,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /laser_rays
+      Marker Topic: /real_laser_rays
       Name: MarkerArray
       Namespaces:
         rays: true
@@ -373,7 +374,7 @@ Visualization Manager:
     Background Color: 255; 255; 255
     Default Light: true
     Fixed Frame: map
-    Frame Rate: 30
+    Frame Rate: 60
   Name: root
   Tools:
     - Class: rviz/Interact
@@ -395,7 +396,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -0.01499998476356268
+      Angle: 0
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -405,10 +406,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 92.70685577392578
+      Scale: 197.11244201660156
       Target Frame: <Fixed Frame>
-      X: 3.835411548614502
-      Y: 2.2919747829437256
+      X: 2.7792372703552246
+      Y: 1.4483616352081299
     Saved: ~
 Window Geometry:
   Displays:
