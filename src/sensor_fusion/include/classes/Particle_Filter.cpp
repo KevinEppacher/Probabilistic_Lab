@@ -69,8 +69,6 @@ geometry_msgs::PoseArray ParticleFilter::convertParticlesToPoseArray(const std::
 
 std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const nav_msgs::OccupancyGrid &map)
 {
-    double totalWeights = 0.0;
-
     std::vector<Particle> updatedParticles;
 
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
@@ -85,6 +83,8 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
         weight = sensorModel.beam_range_finder_model(sensorMeasurement, sampledPose, map);
 
+        // ROS_INFO("Weight: %f", weight);
+
         if (isPoseInFreeCell(sampledPose, map))
         {
             Particle updatedParticle = particle;
@@ -95,25 +95,11 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
             updatedParticles.push_back(updatedParticle);
 
-            totalWeights += weight;
-
             poseArrayAfterMotionModel.poses.push_back(sampledPose);
         }
     }
 
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
-
-    // Normalize weights
-    if (totalWeights == 0.0)
-    {
-        ROS_WARN("Total weight is zero. This may indicate a problem with the weight calculation.");
-        return particles; // Return the original particles to avoid further issues
-    }
-
-    for(int i = 0; i < updatedParticles.size(); i++)
-    {
-        updatedParticles[i].weight /= totalWeights;
-    }
 
     // for (auto &particle : updatedParticles)
     // {

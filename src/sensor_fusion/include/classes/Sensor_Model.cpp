@@ -62,7 +62,7 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
     viz.publishRealRay(measuredRay, visualizeRaysPercentage);
 
-    ROS_INFO("q: %f", q);
+    // ROS_INFO("q: %f", q);
 
     return q;
 }
