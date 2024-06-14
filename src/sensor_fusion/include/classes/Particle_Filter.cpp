@@ -123,10 +123,10 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
     // Resample particles based on their weights
     std::vector<Particle> resampleParticles = ParticleFilter::resampleParticles(updatedParticles);
 
-    for(auto& particle : resampleParticles)
-    {
-        ROS_INFO("Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
-    }
+    // for(auto& particle : resampleParticles)
+    // {
+    //     ROS_INFO("Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
+    // }
 
     geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(resampleParticles);
 
@@ -153,11 +153,19 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
     std::mt19937 gen(rd());
     std::discrete_distribution<int> distrib(weights.begin(), weights.end());
 
-    for(int i = 0; i < particles.size(); i++)
+    int diff = quantityParticles - particles.size();
+
+    if (diff < 0)
+    {
+        ROS_WARN("Number of particles is greater than the quantity of particles. No resampling needed.");
+        return particles;
+    }    
+
+    for(int i = 0; i < particles.size() + diff; i++)
     {
         int index = distrib(gen);
         resampledParticles.push_back(particles[index]);
-    }
+    } 
 
     return resampledParticles;
 }

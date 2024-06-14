@@ -23,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate dynamic reconfigure options
 generate_dynamic_reconfigure_options(
   cfg/Sensor_Model.cfg
+  # cfg/Motion_Model.cfg
 )
 
 # Declare catkin package
@@ -32,7 +33,7 @@ catkin_package(
   CATKIN_DEPENDS roscpp rospy std_msgs dynamic_reconfigure
 )
 
-# Include directories for catkin
+# Include directories for catkin and matplotlibcpp
 include_directories(
   ${catkin_INCLUDE_DIRS}
   include
@@ -51,7 +52,9 @@ add_library(sensor_fusion_lib
 # Link the sensor fusion library with the catkin libraries
 target_link_libraries(sensor_fusion_lib ${catkin_LIBRARIES})
 
-############################################################ CMakelist for main node ############################################################
+############################################################
+# CMakelist for main node
+############################################################
 
 # Add an executable for the main program
 add_executable(main src/main.cpp)
@@ -62,7 +65,9 @@ target_link_libraries(main sensor_fusion_lib ${catkin_LIBRARIES})
 # Add dependencies for the main program
 add_dependencies(main ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-############################################################ CMakelist for my_test node ############################################################
+############################################################
+# CMakelist for my_test node
+############################################################
 
 # Add an executable for the test program
 add_executable(my_test src/my_test.cpp)
@@ -72,3 +77,4 @@ target_link_libraries(my_test sensor_fusion_lib ${catkin_LIBRARIES})
 
 # Add dependencies for the test program
 add_dependencies(my_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+

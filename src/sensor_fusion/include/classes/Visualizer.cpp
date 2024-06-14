@@ -120,7 +120,7 @@ void Visualizer::Visualizer::publishResampledParticles(geometry_msgs::PoseArray 
 {
     poseArray.header.frame_id = "map";
 
-    initialParticlesPub.publish(poseArray);
+    resampledParticlesPub.publish(poseArray);
 
     if (printPoseArray)
     {

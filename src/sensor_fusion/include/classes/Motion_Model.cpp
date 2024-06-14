@@ -8,11 +8,21 @@ MotionModel::MotionModel(ros::NodeHandle &nh)
     nh.getParam("alpha4", alpha4);
     nh.getParam("alpha5", alpha5);
     nh.getParam("alpha6", alpha6);
+
+    //     // Initialize dynamic reconfigure server
+    server = new dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>(nh.getNamespace() + "/motion_model");
+
+    f = boost::bind(&MotionModel::configCallback, this, _1, _2);
+
+    server->setCallback(f);
 }
 
 MotionModel::MotionModel() {}
 
-MotionModel::~MotionModel() {}
+MotionModel::~MotionModel() 
+{
+    delete server;
+}
 
 geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose currentPose)
 {
@@ -83,4 +93,17 @@ double MotionModel::getTimeDifference()
 double MotionModel::normalize_angle_positive(double angle)
 {
     return fmod(fmod(angle, 2 * M_PI) + 2 * M_PI, 2 * M_PI);
+}
+
+void MotionModel::configCallback(sensor_fusion::MotionModelConfig &config, uint32_t level)
+{
+    alpha1 = config.alpha1;
+    alpha2 = config.alpha2;
+    alpha3 = config.alpha3;
+    alpha3 = config.alpha4;
+    alpha5 = config.alpha5;
+    alpha6 = config.alpha6;
+
+    ROS_INFO("Reconfigure Request: alpha1=%f, alpha2=%f, alpha3=%f, alpha4=%f, alpha5=%f, alpha6=%f",
+             alpha1, alpha2, alpha3, alpha4, alpha5, alpha6);
 }

@@ -9,6 +9,13 @@
 #include <tf/transform_datatypes.h>
 #include <cmath>
 
+// Dynamic Reconfigure
+#include <dynamic_reconfigure/server.h>
+#include <mutex>
+
+// Dynamic Reconfigure Motion Model Parameters
+#include <sensor_fusion/MotionModelConfig.h>
+
 #include "Functions.h"
 
 class MotionModel 
@@ -21,12 +28,15 @@ public:
     double sample(double std_dev);
     double getTimeDifference();
     double normalize_angle_positive(double angle);
-
+    void configCallback(sensor_fusion::MotionModelConfig &config, uint32_t level);
 
 private:
     double alpha1, alpha2, alpha3, alpha4, alpha5, alpha6;
     double v_hat, w_hat, v, w, gamma_hat, theta, dt;
     mutable std::mt19937 gen;
+
+    dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>* server;
+    dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>::CallbackType f;
 
 };
 

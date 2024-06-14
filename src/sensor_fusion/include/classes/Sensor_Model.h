@@ -6,14 +6,13 @@
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/Pose.h>
 #include <ros/ros.h>
+
+// Dynamic Reconfigure
 #include <dynamic_reconfigure/server.h>
-#include <sensor_fusion/SensorModelConfig.h>
 #include <mutex>
 
-// Dynamic Reconfigure Config File
-// #include <sensor_fusion/Sensor_ModelConfig.h>
-// #include <eppacher_hw2/dynamic_reconfigure_param_2Config.h>
-
+// Dynamic Reconfigure Sensor Model Parameters
+#include <sensor_fusion/SensorModelConfig.h>
 
 // Custom classes
 #include "Visualizer.h"
@@ -29,7 +28,7 @@ public:
     double beam_range_finder_model(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m);
 
 private:
-    double p_hit(double z_k, double z_star, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m);
+    double p_hit(double z_k, double z_star);
     double p_short(double z_k, double z_star);
     double p_max(double z_k, double z_max);
     double p_rand(double z_k, double z_max);
@@ -39,12 +38,13 @@ private:
     double numericalIntegration(double mean, double z_max, int num_steps);
     void configCallback(sensor_fusion::SensorModelConfig &config, uint32_t level);
 
+
     ros::NodeHandle nh;
     Visualizer::Visualizer viz;
     Communication::Subscriber subscriber;
     double visualizeRaysPercentage = 5;     // Percentage of rays to visualize
 
-    dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig> server;
+    dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig>* server;
     dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig>::CallbackType f;
 
     // Parameters for the sensor model
@@ -52,6 +52,7 @@ private:
     double z_short; double lambda_short;
     double z_max;
     double z_rand;
+
 };
 
 #endif // SensorModel_H

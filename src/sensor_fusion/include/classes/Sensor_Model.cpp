@@ -14,13 +14,16 @@ SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(no
     nh.getParam("sensor_model/lambda_short", lambda_short);
 
     // Initialize dynamic reconfigure server
+    server = new dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig>(nh.getNamespace() + "/sensor_model");
+
     f = boost::bind(&SensorModel::configCallback, this, _1, _2);
-    server.setCallback(f);
+    
+    server->setCallback(f);
 }
 
 SensorModel::~SensorModel()
 {
-
+    delete server;
 }
 
 double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
@@ -48,7 +51,7 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
         double z_star = particle.rays[k].length;
 
-        double p = z_hit * p_hit(z_k, z_star, x_t, m) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_t.range_max) + z_rand * p_rand(z_k, z_t.range_max);
+        double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_t.range_max) + z_rand * p_rand(z_k, z_t.range_max);
 
         // ROS_INFO("p: %f", p);
 
@@ -59,7 +62,7 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
     viz.publishRealRay(measuredRay, visualizeRaysPercentage);
 
-    // ROS_INFO("q: %f", q);
+    ROS_INFO("q: %f", q);
 
     return q;
 }
@@ -84,7 +87,7 @@ std::vector<Ray> SensorModel::convertScanToRays(const sensor_msgs::LaserScan &z_
     return rays;
 }
 
-double SensorModel::p_hit(double z_k, double z_star, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
+double SensorModel::p_hit(double z_k, double z_star)
 {
     if (0 <= z_k <= z_max)
     {
