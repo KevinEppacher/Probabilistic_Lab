@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate dynamic reconfigure options
 generate_dynamic_reconfigure_options(
   cfg/Sensor_Model.cfg
-  # cfg/Motion_Model.cfg
+  cfg/Motion_Model.cfg
 )
 
 # Declare catkin package
