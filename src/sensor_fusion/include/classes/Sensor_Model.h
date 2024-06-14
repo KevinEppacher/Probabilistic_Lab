@@ -42,6 +42,7 @@ private:
     ros::NodeHandle nh;
     Visualizer::Visualizer viz;
     Communication::Subscriber subscriber;
+    Communication::Publisher publisher;
     double visualizeRaysPercentage = 5;     // Percentage of rays to visualize
 
     dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig>* server;

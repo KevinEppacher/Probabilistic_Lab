@@ -28,12 +28,15 @@ namespace Communication
     {
     public:
         Publisher(ros::NodeHandle &nodehandler);
+        Publisher(){};
         void publishTwist(const geometry_msgs::Twist &msg);
         void publishPose(const geometry_msgs::Pose &msg, bool printPose = false);
+        void publishDouble(const double &msg);
 
     private:
         ros::Publisher twistPub;
         ros::Publisher posePub;
+        ros::Publisher testPub;
     };
 
     class Subscriber : public Communication

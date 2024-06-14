@@ -13,6 +13,7 @@ namespace Communication
     {
         twistPub = nh.advertise<geometry_msgs::Twist>("cmd_vel_particle_filter", 10);
         posePub = nh.advertise<geometry_msgs::Pose>("pose", 10);
+        testPub = nh.advertise<std_msgs::Float64>("test", 10);
     }
 
     void Publisher::publishTwist(const geometry_msgs::Twist &msg)
@@ -25,6 +26,13 @@ namespace Communication
         posePub.publish(msg);
         if (printPose)
             ROS_INFO("Particle Pose: %f, %f, %f", msg.position.x, msg.position.y, msg.orientation.z);
+    }
+
+    void Publisher::publishDouble(const double &msg)
+    {
+        std_msgs::Float64 floatMsg;
+        floatMsg.data = msg;
+        testPub.publish(floatMsg);
     }
 
     // Subscriber class definitions

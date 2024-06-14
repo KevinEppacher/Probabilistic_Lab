@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(nodehandler), subscriber(nodehandler)
+SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(nodehandler), subscriber(nodehandler), publisher(nodehandler)
 {
     // Initialize the parameters
     nh.getParam("sensor_model/z_hit", z_hit);
@@ -53,10 +53,16 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
         double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_t.range_max) + z_rand * p_rand(z_k, z_t.range_max);
 
-        // ROS_INFO("p: %f", p);
+        if(p==0)ROS_WARN("p: %f", p);
 
         q = q * p;
+        
+        publisher.publishDouble(q);
+        ROS_INFO("q: %f", q);
+
     }
+
+    ROS_WARN("q: %f", q);
 
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
@@ -94,6 +100,13 @@ double SensorModel::p_hit(double z_k, double z_star)
         double normalization = numericalIntegration(z_star, z_max, 100);
 
         double p = normalDistribution(z_k, z_star) / normalization;
+
+        // ROS_INFO("p_hit: %f", p);
+        // ROS_INFO("normalization: %f", normalization);
+        // ROS_INFO("z_k: %f", z_k);
+        // ROS_INFO("z_star: %f", z_star);
+        // ROS_INFO(" normalDistribution(z_k, z_star): %f", normalDistribution(z_k, z_star));
+        // ROS_INFO("               ");
 
         return p;
     }
