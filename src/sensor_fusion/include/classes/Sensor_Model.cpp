@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(nodehandler), subscriber(nodehandler)//, server(mutex)
+SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(nodehandler), subscriber(nodehandler)
 {
     // Initialize the parameters
     nh.getParam("sensor_model/z_hit", z_hit);
@@ -12,6 +12,10 @@ SensorModel::SensorModel(ros::NodeHandle &nodehandler) : nh(nodehandler), viz(no
     nh.getParam("sensor_model/visualize_rays_percentage", visualizeRaysPercentage);
     nh.getParam("sensor_model/sigma_hit", sigma_hit);
     nh.getParam("sensor_model/lambda_short", lambda_short);
+
+    // Initialize dynamic reconfigure server
+    f = boost::bind(&SensorModel::configCallback, this, _1, _2);
+    server.setCallback(f);
 }
 
 SensorModel::~SensorModel()
@@ -48,15 +52,8 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
         // ROS_INFO("p: %f", p);
 
-        if(p == 0)
-        {
-            ROS_WARN("p is zero");
-        }
-
         q = q * p;
     }
-
-    ROS_INFO(" q: %f", q);
 
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
@@ -217,4 +214,18 @@ std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const 
     }
 
     return rays;
+}
+
+void SensorModel::configCallback(sensor_fusion::SensorModelConfig &config, uint32_t level)
+{
+    z_hit = config.z_hit;
+    sigma_hit = config.sigma_hit;
+    z_short = config.z_short;
+    lambda_short = config.lambda_short;
+    z_max = config.z_max;
+    z_rand = config.z_rand;
+    visualizeRaysPercentage = config.visualize_rays_percentage;
+
+    ROS_INFO("Reconfigure Request: z_hit=%f, sigma_hit=%f, z_short=%f, lambda_short=%f, z_max=%f, z_rand=%f, visualizeRaysPercentage=%f",
+             z_hit, sigma_hit, z_short, lambda_short, z_max, z_rand, visualizeRaysPercentage);
 }

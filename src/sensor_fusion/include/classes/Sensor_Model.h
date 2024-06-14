@@ -7,6 +7,7 @@
 #include <geometry_msgs/Pose.h>
 #include <ros/ros.h>
 #include <dynamic_reconfigure/server.h>
+#include <sensor_fusion/SensorModelConfig.h>
 #include <mutex>
 
 // Dynamic Reconfigure Config File
@@ -36,13 +37,15 @@ private:
     std::vector<Ray> convertScanToRays(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &pose);
     double normalDistribution(double x, double mean);
     double numericalIntegration(double mean, double z_max, int num_steps);
+    void configCallback(sensor_fusion::SensorModelConfig &config, uint32_t level);
 
     ros::NodeHandle nh;
     Visualizer::Visualizer viz;
     Communication::Subscriber subscriber;
     double visualizeRaysPercentage = 5;     // Percentage of rays to visualize
 
-    // dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig> server;
+    dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig> server;
+    dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig>::CallbackType f;
 
     // Parameters for the sensor model
     double z_hit;   double sigma_hit;

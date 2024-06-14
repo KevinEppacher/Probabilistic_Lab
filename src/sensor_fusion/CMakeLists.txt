@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(sensor_fusion)
 
 # Uncomment the following line to compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 # Find catkin macros and libraries
 # If COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz) is used, also find other catkin packages
@@ -20,18 +20,24 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
 )
 
-## Declare catkin package
+# Generate dynamic reconfigure options
+generate_dynamic_reconfigure_options(
+  cfg/Sensor_Model.cfg
+)
+
+# Declare catkin package
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+  LIBRARIES sensor_fusion_lib
   CATKIN_DEPENDS roscpp rospy std_msgs dynamic_reconfigure
 )
 
 # Include directories for catkin
-include_directories(${catkin_INCLUDE_DIRS})
-
-# Include directories for classes
-include_directories(include/classes)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  include
+  include/classes  # Include the directory where your headers are located
+)
 
 # Add a library for sensor fusion
 add_library(sensor_fusion_lib
@@ -42,13 +48,10 @@ add_library(sensor_fusion_lib
   include/classes/Sensor_Model.cpp
 )
 
-# generate_dynamic_reconfigure_options(
-#   cfg/Sensor_Model.cfg
-#  )
+# Link the sensor fusion library with the catkin libraries
+target_link_libraries(sensor_fusion_lib ${catkin_LIBRARIES})
 
 ############################################################ CMakelist for main node ############################################################
-# Include directories for structs
-include_directories(include/structs)
 
 # Add an executable for the main program
 add_executable(main src/main.cpp)
@@ -57,7 +60,7 @@ add_executable(main src/main.cpp)
 target_link_libraries(main sensor_fusion_lib ${catkin_LIBRARIES})
 
 # Add dependencies for the main program
-add_dependencies(main ${sensor_fusion_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(main ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ############################################################ CMakelist for my_test node ############################################################
 
@@ -68,4 +71,4 @@ add_executable(my_test src/my_test.cpp)
 target_link_libraries(my_test sensor_fusion_lib ${catkin_LIBRARIES})
 
 # Add dependencies for the test program
-add_dependencies(my_test ${sensor_fusion_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(my_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

@@ -5,4 +5,7 @@
         <rosparam file="$(find sensor_fusion)/param/particle_filter_param/sensor_model_params.yaml" command="load"/>
         <rosparam file="$(find sensor_fusion)/param/particle_filter_param/general_params.yaml" command="load"/>
 
+    <!-- Launch the rqt_reconfigure tool -->
+    <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" />
+
 </launch>

@@ -6,7 +6,9 @@
                 "${workspaceFolder}/**", // Include all files in the workspace folder
                 // ( Important for removing Red squiggles under #include "ros/ros.h" )
                 "/opt/ros/noetic/include/**", // Include files from ROS (Robot Operating System) library
-                "/usr/include/**" // Include files from system libraries
+                "/usr/include/**", // Include files from system libraries
+                "${workspaceFolder}/src/sensor_fusion/include/**", // Include files from sensor_fusion directory
+                "${workspaceFolder}/devel/include/**" // Add this line to include generated files in the devel space for error by dynamic reconfigure
             ],
             "defines": [], // No additional defines
             "compilerPath": "/usr/bin/gcc", // Path to the GCC compiler
