@@ -60,15 +60,15 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
             q = q * p;
         }
         
-        publisher.publishDouble(q);
-        if( q == 0 )
-        {
-            ROS_WARN("q: %f", q);
-        }
-        else
-        {
-            ROS_INFO("q: %f", q);
-        }
+        // publisher.publishDouble(q);
+        // if( q == 0 )
+        // {
+        //     ROS_WARN("q: %f", q);
+        // }
+        // else
+        // {
+        //     ROS_INFO("q: %f", q);
+        // }
     }
 
     // ROS_WARN("q: %f", q);

@@ -121,11 +121,11 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
     return resampleParticles;
 }
 
-std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Particle> &particles)
+std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &particles)
 {
     std::vector<Particle> resampledParticles;
     std::vector<double> weights;
-    double totalWeights = 0.0;
+    double totalWeights = 0.0, newWeight = 0.0;
 
     for(auto& particle : particles)
     {
@@ -133,28 +133,50 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
         totalWeights += particle.weight;
     }
 
-    // ROS_INFO("totalWeights: %f", totalWeights);
+    // Normiere die Gewichte
+    for(int i = 0; i < particles.size(); i++)
+    {
+        particles[i].weight /= totalWeights;
+        newWeight += particles[i].weight;
+        weights[i] = particles[i].weight;
+        ROS_INFO("Particle Weight: %f", particles[i].weight);
+    }
+
+    if(newWeight < 0.99 || newWeight > 1.01 )
+    {
+        ROS_WARN("Sum of Particles Weights: %f", newWeight);
+    }
+
+    // // Normiere die Gewichte in der weights-Liste
+    // for(auto& weight : weights)
+    // {
+    //     weight /= totalWeights;
+    // }
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::discrete_distribution<int> distrib(weights.begin(), weights.end());
 
-    int diff = quantityParticles - particles.size();
-
-    if (diff < 0)
+    // Wenn die Partikelanzahl größer ist als die gewünschte Anzahl, gib die ursprünglichen Partikel zurück
+    if (particles.size() >= quantityParticles)
     {
-        ROS_WARN("Number of particles is greater than the quantity of particles. No resampling needed.");
+        ROS_WARN("Number of particles is greater than or equal to the quantity of particles. No resampling needed.");
         return particles;
-    }    
+    }
+
+    int diff = quantityParticles - particles.size();
 
     for(int i = 0; i < particles.size() + diff; i++)
     {
         int index = distrib(gen);
-        resampledParticles.push_back(particles[index]);
-    } 
+        Particle resampledParticle = particles[index];
+        resampledParticle.weight = 1.0 / (particles.size() + diff); // Setze das Gewicht der neu gesampelten Partikel
+        resampledParticles.push_back(resampledParticle);
+    }
 
     return resampledParticles;
 }
+
 
 
 bool ParticleFilter::isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map)
