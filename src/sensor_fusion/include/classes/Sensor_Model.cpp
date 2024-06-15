@@ -55,14 +55,23 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
         if(p==0)ROS_WARN("p: %f", p);
 
-        q = q * p;
+        if(p != 0 )
+        {
+            q = q * p;
+        }
         
         publisher.publishDouble(q);
-        ROS_INFO("q: %f", q);
-
+        if( q == 0 )
+        {
+            ROS_WARN("q: %f", q);
+        }
+        else
+        {
+            ROS_INFO("q: %f", q);
+        }
     }
 
-    ROS_WARN("q: %f", q);
+    // ROS_WARN("q: %f", q);
 
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
@@ -72,7 +81,6 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
     return q;
 }
-
 std::vector<Ray> SensorModel::convertScanToRays(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &pose)
 {
     std::vector<Ray> rays;
