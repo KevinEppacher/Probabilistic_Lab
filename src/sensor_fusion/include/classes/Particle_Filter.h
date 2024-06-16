@@ -34,7 +34,7 @@ public:
     explicit ParticleFilter(ros::NodeHandle& nodehandler, int quantityParticles = 100);  // Default value for particles
     ~ParticleFilter();
 
-    std::vector<Particle> initializeParticles(const State &initState, const nav_msgs::OccupancyGrid &map);
+    std::vector<Particle> initializeParticles(const nav_msgs::OccupancyGrid &map);
 
     std::vector<Particle> estimatePoseWithMCL(const std::vector<Particle>& particles,
                                         const geometry_msgs::Twist& motionCommand,
@@ -58,6 +58,7 @@ private:
     Visualizer::Visualizer visualizer;
     MotionModel motionModel;
     SensorModel sensorModel;
+    nav_msgs::OccupancyGrid map;
 
     float randomOrientation(std::mt19937 &gen);
 

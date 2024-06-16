@@ -18,16 +18,13 @@ int main(int argc, char **argv)
 
     ros::Rate loop_rate(loop_frequency);
 
-    // Setup
-    State robotState(0, 0, 0);
-
     Communication::Subscriber subscriber(nh);
 
     nav_msgs::OccupancyGrid map = subscriber.getMap();
 
     ParticleFilter particleFilter(nh, numParticles);
 
-    std::vector<Particle> particles = particleFilter.initializeParticles(robotState, map);
+    std::vector<Particle> particles = particleFilter.initializeParticles(map);
 
     while (ros::ok())
     {

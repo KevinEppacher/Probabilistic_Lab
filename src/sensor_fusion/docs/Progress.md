@@ -20,6 +20,7 @@ The Particles are on the wrong location and do not move
 
 ### Other issues:
 1. Program is slow, due to visualization in all the nested loops --> visualize all particles, rays at once on each particle
+2. For debugging purposes, print the sum of the errors of each measurement
 
 
 ### Solution: 

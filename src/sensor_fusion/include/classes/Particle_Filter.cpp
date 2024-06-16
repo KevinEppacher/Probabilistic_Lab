@@ -17,7 +17,7 @@ void ParticleFilter::getNodehanlder(ros::NodeHandle &nodehandler)
     nh = nodehandler;
 }
 
-std::vector<Particle> ParticleFilter::initializeParticles(const State &initState, const nav_msgs::OccupancyGrid &map)
+std::vector<Particle> ParticleFilter::initializeParticles(const nav_msgs::OccupancyGrid &map)
 {
     std::vector<Particle> particles;
     particles.reserve(quantityParticles);
@@ -73,7 +73,7 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
 
-    // SensorModel sensorModel;
+    this->map = map;
 
     double weight;
 
@@ -85,18 +85,28 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
         // ROS_INFO("Weight: %f", weight);
 
-        if (isPoseInFreeCell(sampledPose, map))
-        {
-            Particle updatedParticle = particle;
+        Particle updatedParticle = particle;
 
-            updatedParticle.pose = sampledPose;
+        updatedParticle.pose = sampledPose;
 
-            updatedParticle.weight = weight;
+        updatedParticle.weight = weight;
 
-            updatedParticles.push_back(updatedParticle);
+        updatedParticles.push_back(updatedParticle);
 
-            poseArrayAfterMotionModel.poses.push_back(sampledPose);
-        }
+        poseArrayAfterMotionModel.poses.push_back(sampledPose);
+
+        // if (isPoseInFreeCell(sampledPose, map))
+        // {
+        //     Particle updatedParticle = particle;
+
+        //     updatedParticle.pose = sampledPose;
+
+        //     updatedParticle.weight = weight;
+
+        //     updatedParticles.push_back(updatedParticle);
+
+        //     poseArrayAfterMotionModel.poses.push_back(sampledPose);
+        // }
     }
 
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
@@ -138,8 +148,7 @@ std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &p
     {
         particles[i].weight /= totalWeights;
         newWeight += particles[i].weight;
-        weights[i] = particles[i].weight;
-        ROS_INFO("Particle Weight: %f", particles[i].weight);
+        // ROS_INFO("Particle Weight: %f", particles[i].weight);
     }
 
     if(newWeight < 0.99 || newWeight > 1.01 )
@@ -147,31 +156,53 @@ std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &p
         ROS_WARN("Sum of Particles Weights: %f", newWeight);
     }
 
-    // // Normiere die Gewichte in der weights-Liste
-    // for(auto& weight : weights)
-    // {
-    //     weight /= totalWeights;
-    // }
+    // Normiere die Gewichte in der weights-Liste
+    for(auto& weight : weights)
+    {
+        weight /= totalWeights;
+    }
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::discrete_distribution<int> distrib(weights.begin(), weights.end());
 
-    // Wenn die Partikelanzahl größer ist als die gewünschte Anzahl, gib die ursprünglichen Partikel zurück
-    if (particles.size() >= quantityParticles)
+    double quantityLostParticles = quantityParticles - particles.size();
+
+    ROS_INFO("Quantity Lost Particles: %f", quantityLostParticles);
+
+    int numParticles = particles.size() + quantityLostParticles;
+    int numRandomParticles = static_cast<int>(0.2 * numParticles); // 10% der Partikel zufällig verteilen
+    int numResampledParticles = numParticles - numRandomParticles;
+
+    // Resample existing particles
+    for(int i = 0; i < numResampledParticles; i++)
     {
-        ROS_WARN("Number of particles is greater than or equal to the quantity of particles. No resampling needed.");
-        return particles;
+        int index = std::discrete_distribution<int>(weights.begin(), weights.end())(gen);
+        Particle resampledParticle = particles[index];
+        resampledParticle.weight = 1.0 / numParticles;
+        resampledParticles.push_back(resampledParticle);
+        ROS_INFO("Resampled Particle Pose: %f, %f, %f", resampledParticle.pose.position.x, resampledParticle.pose.position.y, resampledParticle.pose.orientation.z);
     }
 
-    int diff = quantityParticles - particles.size();
 
-    for(int i = 0; i < particles.size() + diff; i++)
+    std::vector<Particle> randomParticles;
+    randomParticles.reserve(numRandomParticles);
+
+    std::vector<std::pair<float, float>> free_cells = findFreeCells(map);
+
+    // Erzeugen von Partikeln an zufälligen freien Stellen
+    std::uniform_int_distribution<> distrib(0, free_cells.size() - 1);
+
+    for (int i = 0; i < numRandomParticles; ++i)
     {
-        int index = distrib(gen);
-        Particle resampledParticle = particles[index];
-        resampledParticle.weight = 1.0 / (particles.size() + diff); // Setze das Gewicht der neu gesampelten Partikel
-        resampledParticles.push_back(resampledParticle);
+        int cell_index = distrib(gen); // Zufällige Zellenindex
+        Particle particle;
+        particle.pose.position.x = free_cells[cell_index].first;
+        particle.pose.position.y = free_cells[cell_index].second;
+        double randomYaw = randomOrientation(gen);
+        particle.pose.orientation = tf::createQuaternionMsgFromYaw(randomYaw);
+        particle.weight = 1.0 / static_cast<double>(quantityParticles);
+        resampledParticles.push_back(particle);
+        // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
 
     return resampledParticles;
