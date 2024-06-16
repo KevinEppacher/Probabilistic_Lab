@@ -17,6 +17,7 @@ int main(int argc, char **argv)
     nh.getParam("num_particles", numParticles);
 
     ros::Rate loop_rate(loop_frequency);
+    double loop_duration = 1.0 / loop_frequency; // Dauer eines Schleifendurchlaufs in Sekunden
 
     Communication::Subscriber subscriber(nh);
 
@@ -28,6 +29,8 @@ int main(int argc, char **argv)
 
     while (ros::ok())
     {
+        ros::Time start_time = ros::Time::now(); // Beginn des Schleifendurchlaufs
+
         geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);
         sensor_msgs::LaserScan laserMeasurement = subscriber.getLaser(false);
 
@@ -39,6 +42,19 @@ int main(int argc, char **argv)
 
         ros::spinOnce();
         loop_rate.sleep();
+
+        ros::Time end_time = ros::Time::now(); // Ende des Schleifendurchlaufs
+        ros::Duration elapsed_time = end_time - start_time; // Dauer des Schleifendurchlaufs
+
+        // Überprüfen, ob die Schleifenrate eingehalten wird
+        if (elapsed_time.toSec() > loop_duration)
+        {
+            ROS_WARN("Loop rate missed! Elapsed time: %f seconds, Loop duration: %f seconds", elapsed_time.toSec(), loop_duration);
+        }
+        else
+        {
+            ROS_INFO("Loop rate maintained. Elapsed time: %f seconds", elapsed_time.toSec());
+        }
     }
 
     Visualizer::Visualizer visualizer(nh);

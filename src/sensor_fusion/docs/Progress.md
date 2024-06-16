@@ -24,3 +24,34 @@ The Particles are on the wrong location and do not move
 
 
 ### Solution: 
+Yet no solution
+
+## Problem 2:
+### Description:
+The particle_filter program takes to long
+
+### Checked Implementations:
+1.  Using isPoseInFreeCell does not affect 
+With isPoseInFreeCell: 2.4 s
+Without isPoseInFreeCell: 2.3 s
+
+2. Sensor_Model.cpp
+With Ray visualization: 2.4 s
+Without Ray visualization: 2.6 s
+
+3. Particel_Filter.cpp
+Updating map in every loop with this-> map = map : 2.6 s
+Not Updating map in every loop with this-> map = map : 1.8 s
+
+4. 
+With Docker: ...
+Without Docker: ...
+
+
+### Solved issus:
+
+
+### Other issues:
+
+
+### Solution: 

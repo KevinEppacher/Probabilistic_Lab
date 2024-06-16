@@ -49,7 +49,8 @@ Note: This documentation comment is specific to the provided code selection and 
 
     <!-- Create gazebo world -->
     <include file="$(find gazebo_ros)launch/empty_world.launch" >
-        <arg name="world_name" value="$(find sensor_fusion)/maps/10by10_maze.world_1.xml" />
+        <!-- <arg name="world_name" value="$(find sensor_fusion)/maps/10by10_maze.world_1.xml" /> -->
+        <arg name="world_name" value="$(find sensor_fusion)/world/small_house.world" />
         <arg name="gui" value="false" />
         <arg name="use_sim_time" value="true" />
         <arg name="paused" value="false" />
@@ -64,7 +65,7 @@ Note: This documentation comment is specific to the provided code selection and 
     <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch"/>
 
     <!-- Start the map_server node to provide the map for localization -->
-    <node pkg="map_server" name="map_server" type="map_server" args="$(find sensor_fusion)/maps/map2.yaml"/>
+    <node pkg="map_server" name="map_server" type="map_server" args="$(find sensor_fusion)/maps/small_house.yaml"/>
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sensor_fusion)/config/rviz_white_background_config.rviz" />
 
@@ -90,7 +91,7 @@ Note: This documentation comment is specific to the provided code selection and 
         <remap from="scan"                      to="/scan"/>
 
         <!-- Laser sensor model parameters -->
-        <param name="laser_max_range"           value="3.5"/>
+        <param name="laser_max_range"           value="100"/>
         <param name="laser_max_beams"           value="180"/>
         <param name="laser_z_hit"               value="0.5"/>
         <param name="laser_z_short"             value="0.05"/>
@@ -114,7 +115,6 @@ Note: This documentation comment is specific to the provided code selection and 
 
     <!-- <node name="main" pkg="sensor_fusion" type="main" output="screen" /> -->
     <rosparam file="$(find sensor_fusion)/param/costmap_common_params_$(arg model).yaml" command="load" ns="global_costmap"/>
-
     
     <!-- Das <include>-Element ist eine Möglichkeit, um Code aus einer anderen Datei wiederzuverwenden. Es ermöglicht es,
      den Code in separate Dateien aufzuteilen und ihn dann in anderen Dateien einzufügen, um die Wiederverwendbarkeit und

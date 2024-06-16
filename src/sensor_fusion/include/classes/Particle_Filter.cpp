@@ -22,6 +22,8 @@ std::vector<Particle> ParticleFilter::initializeParticles(const nav_msgs::Occupa
     std::vector<Particle> particles;
     particles.reserve(quantityParticles);
 
+    this->map = map;
+
     std::vector<std::pair<float, float>> free_cells = findFreeCells(map);
 
     // Erzeugen von Partikeln an zufälligen freien Stellen
@@ -73,8 +75,6 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
 
-    this->map = map;
-
     double weight;
 
     for (auto &particle : particles)
@@ -85,50 +85,30 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
         // ROS_INFO("Weight: %f", weight);
 
-        Particle updatedParticle = particle;
+        if (isPoseInFreeCell(sampledPose, map))
+        {
+            Particle updatedParticle = particle;
 
-        updatedParticle.pose = sampledPose;
+            updatedParticle.pose = sampledPose;
 
-        updatedParticle.weight = weight;
+            updatedParticle.weight = weight;
 
-        updatedParticles.push_back(updatedParticle);
+            updatedParticles.push_back(updatedParticle);
 
-        poseArrayAfterMotionModel.poses.push_back(sampledPose);
-
-        // if (isPoseInFreeCell(sampledPose, map))
-        // {
-        //     Particle updatedParticle = particle;
-
-        //     updatedParticle.pose = sampledPose;
-
-        //     updatedParticle.weight = weight;
-
-        //     updatedParticles.push_back(updatedParticle);
-
-        //     poseArrayAfterMotionModel.poses.push_back(sampledPose);
-        // }
+            poseArrayAfterMotionModel.poses.push_back(sampledPose);
+        }
     }
 
-    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
+    // visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
 
-    // for (auto &particle : updatedParticles)
-    // {
-    //     ROS_INFO("Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
-    // }
+    // // Resample particles based on their weights
+    // std::vector<Particle> resampleParticles = ParticleFilter::resampleParticles(updatedParticles);
 
-    // Resample particles based on their weights
-    std::vector<Particle> resampleParticles = ParticleFilter::resampleParticles(updatedParticles);
+    // geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(resampleParticles);
 
-    // for(auto& particle : resampleParticles)
-    // {
-    //     ROS_INFO("Resampled Particle Pose: %f, %f, %f, Particle Weight %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z, particle.weight);
-    // }
+    // visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
 
-    geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(resampleParticles);
-
-    visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
-
-    return resampleParticles;
+    return particles;
 }
 
 std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &particles)

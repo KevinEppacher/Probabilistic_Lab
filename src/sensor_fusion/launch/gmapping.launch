@@ -1,4 +1,23 @@
 <launch>
+
+    <!-- Create gazebo world -->
+  <include file="$(find gazebo_ros)launch/empty_world.launch" >
+      <!-- <arg name="world_name" value="$(find sensor_fusion)/maps/10by10_maze.world_1.xml" /> -->
+      <arg name="world_name" value="$(find sensor_fusion)/maps/turtlebot3_house.world" />
+      <arg name="gui" value="true" />
+      <arg name="use_sim_time" value="true" />
+      <arg name="paused" value="false" />
+  </include>
+
+    <!-- Define robot description parameter using xacro to process the URDF file -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro"/>
+  <!-- Spawn URDF model in Gazebo -->
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_burger -x 0.5 -y 0.5 -z 0.5 -Y 0 -param robot_description" />
+
+  <!-- Include the turtlebot3_remote.launch file -->
+  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch"/>
+  
+
   <!-- Gmapping Node -->
   <node name="gmapping" pkg="gmapping" type="slam_gmapping" respawn="false" output="screen">
     <param name="base_frame" value="base_link"/>
