@@ -34,15 +34,17 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
     int K = z_t.ranges.size();
 
-    z_max = z_t.range_max;
-
     std::vector<Ray> measuredRay;
 
     nav_msgs::Odometry odom = subscriber.getOdom();
     geometry_msgs::Pose odomPose = odom.pose.pose;
 
-    for (int k = 0; k < K; ++k)
+    int step = std::max(1, static_cast<int>( K * visualizeRaysPercentage / 100));
+
+    for (int k = 0; k < K; k += step)
     {
+        // ROS_INFO("Beam %d", k);
+
         particle.rays = rayCasting(x_t, m, z_t);
 
         measuredRay = convertScanToRays(z_t, odomPose);
@@ -199,6 +201,8 @@ std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const 
     // Iterate over laser scan angles
     for (int i = 0; i < z_t.ranges.size(); i++)
     {
+        // ROS_INFO(" Ray Beam %d", i);
+
         double angle = z_t.angle_min + i * z_t.angle_increment;
 
         ray.angle = angle;
@@ -207,7 +211,7 @@ std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const 
         double y = pose.position.y;
 
         bool hit = false;
-        double max_range = z_t.range_max;
+        double max_range = 10;
         double range = 0.0;
 
         while (!hit && range < max_range)

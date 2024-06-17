@@ -65,7 +65,7 @@ Note: This documentation comment is specific to the provided code selection and 
     <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch"/>
 
     <!-- Start the map_server node to provide the map for localization -->
-    <node pkg="map_server" name="map_server" type="map_server" args="$(find sensor_fusion)/maps/small_house.yaml"/>
+    <node pkg="map_server" name="map_server" type="map_server" args="$(find sensor_fusion)/maps/small_house_1.yaml"/>
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sensor_fusion)/config/rviz_white_background_config.rviz" />
 

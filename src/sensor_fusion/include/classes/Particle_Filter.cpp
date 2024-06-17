@@ -75,6 +75,8 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
 
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
 
+    std::vector<Particle> resampleParticles;
+
     double weight;
 
     for (auto &particle : particles)
@@ -99,16 +101,16 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const std::vector<Part
         }
     }
 
-    // visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
+    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
 
-    // // Resample particles based on their weights
-    // std::vector<Particle> resampleParticles = ParticleFilter::resampleParticles(updatedParticles);
+    // Resample particles based on their weights
+    resampleParticles = ParticleFilter::resampleParticles(updatedParticles);
 
-    // geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(resampleParticles);
+    geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(resampleParticles);
 
-    // visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
+    visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
 
-    return particles;
+    return resampleParticles;
 }
 
 std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &particles)
@@ -150,7 +152,7 @@ std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &p
     ROS_INFO("Quantity Lost Particles: %f", quantityLostParticles);
 
     int numParticles = particles.size() + quantityLostParticles;
-    int numRandomParticles = static_cast<int>(0.2 * numParticles); // 10% der Partikel zufällig verteilen
+    int numRandomParticles = static_cast<int>(0.1 * numParticles); // 10% der Partikel zufällig verteilen
     int numResampledParticles = numParticles - numRandomParticles;
 
     // Resample existing particles
