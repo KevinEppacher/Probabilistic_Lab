@@ -11,7 +11,7 @@ Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler) : nh(nodehandle
     poseArrayMotionModelPub = nh.advertise<geometry_msgs::PoseArray>("poseArrayMotionModel", 1);
     initialParticlesPub = nh.advertise<geometry_msgs::PoseArray>("initialParticles", 1);
     realRaysPub = nh.advertise<visualization_msgs::MarkerArray>("real_laser_rays", 1);
-    simRaysPub = nh.advertise<visualization_msgs::MarkerArray>("sim_laser_rays", 1);
+    simRaysPub = nh.advertise<visualization_msgs::MarkerArray>("sim_laser_rays", 500);
     resampledParticlesPub = nh.advertise<geometry_msgs::PoseArray>("resampled_particles", 1);
 
 }

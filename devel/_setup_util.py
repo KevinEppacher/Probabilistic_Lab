@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
         if not args.local:
             # environment at generation time
-            CMAKE_PREFIX_PATH = r'/home/kevin/RobotikMaster/Semester2/Probabilistic_Lab/devel;/home/kevin/catkin_ws_2/devel;/home/kevin/ws_moveit/devel;/opt/ros/noetic'.split(';')
+            CMAKE_PREFIX_PATH = r'/Probabilistic_Lab/devel;/opt/ros/noetic'.split(';')
         else:
             # don't consider any other prefix path than this one
             CMAKE_PREFIX_PATH = []
