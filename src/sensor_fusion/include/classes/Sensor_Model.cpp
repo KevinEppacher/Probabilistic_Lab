@@ -45,11 +45,6 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
     measuredRay = convertScanToRays(z_t, odomPose);
 
-    for( auto &ray : measuredRay)
-    {
-        ROS_INFO("Ray: %f", ray.length);
-    }
-
     for (int k = 0; k < K; k += step)
     {
         // ROS_INFO("Beam %d", k);
