@@ -25,17 +25,17 @@ public:
     SensorModel(){};
     ~SensorModel(); // destructor
 
-    double beam_range_finder_model(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m);
+    double beam_range_finder_model(const sensor_msgs::LaserScan &scanMeasurement, const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map);
 
 private:
-    double p_hit(double z_k, double z_star);
-    double p_short(double z_k, double z_star);
-    double p_max(double z_k, double z_max);
-    double p_rand(double z_k, double z_max);
+    double p_hit(double& z_k, double& z_star);
+    double p_short(double& z_k, double& z_star);
+    double p_max(double& z_k, float& z_max);
+    double p_rand(double& z_k, float& z_max);
     std::vector<Ray> rayCasting(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map, const sensor_msgs::LaserScan &z_t);
     std::vector<Ray> convertScanToRays(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &pose);
     double normalDistribution(double x, double mean);
-    double numericalIntegration(double mean, double z_max, int num_steps);
+    double numericalIntegration(double mean, double z_max_range, int num_steps);
     void configCallback(sensor_fusion::SensorModelConfig &config, uint32_t level);
 
 
@@ -47,6 +47,8 @@ private:
 
     dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig>* server;
     dynamic_reconfigure::Server<sensor_fusion::SensorModelConfig>::CallbackType f;
+
+    std::vector<Ray> measuredRay;
 
     // Parameters for the sensor model
     double z_hit;   double sigma_hit;

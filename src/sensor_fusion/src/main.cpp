@@ -38,11 +38,6 @@ int main(int argc, char **argv)
 
         ROS_INFO("Updated Particles: %lu", updatedParticles.size());
 
-        particles = updatedParticles;
-
-        ros::spinOnce();
-        loop_rate.sleep();
-
         ros::Time end_time = ros::Time::now(); // Ende des Schleifendurchlaufs
         ros::Duration elapsed_time = end_time - start_time; // Dauer des Schleifendurchlaufs
 
@@ -55,6 +50,9 @@ int main(int argc, char **argv)
         {
             ROS_INFO("Loop rate maintained. Elapsed time: %f seconds", elapsed_time.toSec());
         }
+
+        ros::spinOnce();
+        loop_rate.sleep();
     }
 
     Visualizer::Visualizer visualizer(nh);

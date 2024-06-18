@@ -26,33 +26,38 @@ SensorModel::~SensorModel()
     delete server;
 }
 
-double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &x_t, const nav_msgs::OccupancyGrid &m)
+double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMeasurement, const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map)
 {
     double q = 1.0;
+
+    sensor_msgs::LaserScan z_t = scanMeasurement;
+
+    geometry_msgs::Pose x_t = pose;
 
     Particle particle;
 
     int K = z_t.ranges.size();
-
-    std::vector<Ray> measuredRay;
 
     nav_msgs::Odometry odom = subscriber.getOdom();
     geometry_msgs::Pose odomPose = odom.pose.pose;
 
     int step = std::max(1, static_cast<int>( K * visualizeRaysPercentage / 100));
 
-    particle.rays = rayCasting(x_t, m, z_t);
+    particle.rays = rayCasting(x_t, map, z_t);
 
     measuredRay = convertScanToRays(z_t, odomPose);
+
+    double sumError = 0, error = 0;
 
     for (int k = 0; k < K; k += step)
     {
         // ROS_INFO("Beam %d", k);
 
-
         double z_k = measuredRay[k].length;
 
         double z_star = particle.rays[k].length;
+
+        error = z_k - z_star;
 
         double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_t.range_max) + z_rand * p_rand(z_k, z_t.range_max);
 
@@ -62,6 +67,10 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
         {
             q = q * p;
         }
+
+        sumError += error;
+    // ROS_INFO("error: %f", error); 
+    publisher.publishDouble(error);
         
         // publisher.publishDouble(q);
         // if( q == 0 )
@@ -76,9 +85,12 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &z_t, c
 
     // ROS_WARN("q: %f", q);
 
+
+
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
     viz.publishRealRay(measuredRay, visualizeRaysPercentage);
+
 
     // ROS_INFO("q: %f", q);
 
@@ -104,9 +116,9 @@ std::vector<Ray> SensorModel::convertScanToRays(const sensor_msgs::LaserScan &z_
     return rays;
 }
 
-double SensorModel::p_hit(double z_k, double z_star)
+double SensorModel::p_hit(double& z_k, double& z_star)
 {
-    if (0 <= z_k <= z_max)
+    if (0 <= z_k && z_k <= z_max)
     {
         double normalization = numericalIntegration(z_star, z_max, 100);
 
@@ -142,9 +154,9 @@ double SensorModel::normalDistribution(double x, double mean)
 }
 
 // Numerical integration using the trapezoidal rule
-double SensorModel::numericalIntegration(double mean, double z_max, int num_steps)
+double SensorModel::numericalIntegration(double mean, double z_max_range, int num_steps)
 {
-    double step_size = z_max / num_steps;
+    double step_size = z_max_range / num_steps;
     double integral = 0.0;
 
     for (int i = 0; i <= num_steps; ++i)
@@ -158,7 +170,7 @@ double SensorModel::numericalIntegration(double mean, double z_max, int num_step
     return integral;
 }
 
-double SensorModel::p_short(double z_k, double z_star)
+double SensorModel::p_short(double& z_k, double& z_star)
 {
     if (0 <= z_k <= z_star)
     {
@@ -176,13 +188,13 @@ double SensorModel::p_short(double z_k, double z_star)
 
 
 
-double SensorModel::p_max(double z_k, double z_max)
+double SensorModel::p_max(double& z_k, float& z_max)
 {
     // (condition) ? (value if_true) : (value if_false)
     return (z_k == z_max) ? 1.0 : 0.0;
 }
 
-double SensorModel::p_rand(double z_k, double z_max)
+double SensorModel::p_rand(double& z_k, float& z_max)
 {
     // Probability of a random measurement
     return (0 <= z_k <= z_max) ? 1.0 / z_max : 0.0;

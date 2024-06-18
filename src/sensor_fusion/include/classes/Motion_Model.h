@@ -24,7 +24,7 @@ public:
     MotionModel(ros::NodeHandle& nh);
     MotionModel();
     ~MotionModel();
-    geometry_msgs::Pose sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose currentPose);
+    geometry_msgs::Pose sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose);
     double sample(double std_dev);
     double getTimeDifference();
     double normalize_angle_positive(double angle);

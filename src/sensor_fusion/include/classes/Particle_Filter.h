@@ -36,7 +36,7 @@ public:
 
     std::vector<Particle> initializeParticles(const nav_msgs::OccupancyGrid &map);
 
-    std::vector<Particle> estimatePoseWithMCL(const std::vector<Particle>& particles,
+    std::vector<Particle> estimatePoseWithMCL(std::vector<Particle>& particles,
                                         const geometry_msgs::Twist& motionCommand,
                                         const sensor_msgs::LaserScan& sensorMeasurement, 
                                         const nav_msgs::OccupancyGrid& map);
@@ -49,6 +49,8 @@ private:
     bool isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map);
     std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid &map);
     std::vector<Particle> resampleParticles(std::vector<Particle>& particles);
+    void printHistogram(const std::vector<Particle> &particles, int numBins);
+
 
     Particle particle;
     int quantityParticles;
@@ -59,6 +61,8 @@ private:
     MotionModel motionModel;
     SensorModel sensorModel;
     nav_msgs::OccupancyGrid map;
+
+    double percentage_resample_random_particles = 0.1;
 
     float randomOrientation(std::mt19937 &gen);
 

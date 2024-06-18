@@ -1,6 +1,6 @@
 #include "Motion_Model.h"
 
-MotionModel::MotionModel(ros::NodeHandle &nh)
+MotionModel::MotionModel(ros::NodeHandle &nh) : gen(std::random_device{}())
 {
     nh.getParam("alpha1", alpha1);
     nh.getParam("alpha2", alpha2);
@@ -19,16 +19,20 @@ MotionModel::MotionModel(ros::NodeHandle &nh)
 
 MotionModel::MotionModel() {}
 
-MotionModel::~MotionModel() 
+MotionModel::~MotionModel()
 {
     delete server;
 }
 
-geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose currentPose)
+geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose)
 {
-    theta = tf::getYaw(currentPose.orientation);
+    theta = tf::getYaw(prevPose.orientation);
     theta = normalize_angle_positive(theta);
 
+    double x = prevPose.position.x;
+    double y = prevPose.position.y;
+    double newX, newY;
+    geometry_msgs::Pose newPose;
     // ROS_INFO(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
 
     dt = getTimeDifference();
@@ -47,38 +51,36 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
 
     gamma_hat = sample(alpha5 * std::abs(v) + alpha6 * std::abs(w));
 
-    // ROS_INFO(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
 
-    if(fabs(w_hat) > 1e-5) // Avoid division by zero
+    if (fabs(w_hat) > 1e-5) // Avoid division by zero
     {
-        currentPose.position.x = currentPose.position.x - (v_hat * sin(theta) / w_hat) + (v_hat * sin(theta + w_hat * dt) / w_hat);
-        currentPose.position.y = currentPose.position.y + (v_hat * cos(theta) / w_hat) - (v_hat * cos(theta + w_hat * dt) / w_hat);
+        newX = x - (v_hat * sin(theta) / w_hat) + (v_hat * sin(theta + w_hat * dt) / w_hat);
+        newY = y + (v_hat * cos(theta) / w_hat) - (v_hat * cos(theta + w_hat * dt) / w_hat);
     }
     else
     {
         // When Robot is moving in a straight line
-        currentPose.position.x = currentPose.position.x + v_hat * cos(theta) * dt;
-        currentPose.position.y = currentPose.position.y + v_hat * sin(theta) * dt;
+        newX = x + v_hat * cos(theta) * dt;
+        newY = y + v_hat * sin(theta) * dt;
     }
 
     theta = theta + w_hat * dt + gamma_hat * dt;
-    currentPose.orientation = tf::createQuaternionMsgFromYaw(normalize_angle_positive(theta));
+
+    newPose.position.x = newX;
+    newPose.position.y = newY;  
+    newPose.orientation = tf::createQuaternionMsgFromYaw(normalize_angle_positive(theta));
 
     // ROS_INFO("Sampled Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, tf::getYaw(currentPose.orientation));
 
-    return currentPose;
+    // ROS_WARN(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
+
+    return newPose;
 }
 
 double MotionModel::sample(double std_dev)
 {
-    // static std::random_device rd;
-    // static std::default_random_engine generator(rd());
-    // std::normal_distribution<double> distribution(0.0, std_dev);
-    // return distribution(generator);
-
     std::normal_distribution<> dist(0.0, std::sqrt(std_dev));
     return dist(gen);
-
 }
 
 double MotionModel::getTimeDifference()
