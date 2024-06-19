@@ -369,13 +369,13 @@ Visualization Manager:
       Update Interval: 0
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: true
+      Enabled: false
       Marker Topic: /real_laser_rays
       Name: MarkerArray
       Namespaces:
-        rays: true
+        {}
       Queue Size: 1
-      Value: true
+      Value: false
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /sim_laser_rays
@@ -421,10 +421,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 66.7343978881836
+      Scale: 236.35989379882812
       Target Frame: <Fixed Frame>
-      X: -0.05615144968032837
-      Y: 1.1373145580291748
+      X: -1.173770785331726
+      Y: 1.3493616580963135
     Saved: ~
 Window Geometry:
   Displays:

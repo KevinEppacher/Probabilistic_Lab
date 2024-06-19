@@ -55,6 +55,7 @@ private:
     double z_short; double lambda_short;
     double z_max;
     double z_rand;
+    float z_max_range = 10;
 
 };
 

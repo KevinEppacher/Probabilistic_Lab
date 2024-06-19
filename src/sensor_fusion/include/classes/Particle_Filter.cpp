@@ -81,8 +81,6 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(std::vector<Particle> 
 
         double weight = sensorModel.beam_range_finder_model(sensorMeasurement, sampledPose, map);
 
-        // ROS_INFO("Weight: %f", weight);
-
         if (isPoseInFreeCell(sampledPose, map))
         {
             Particle updatedParticle = particle;
@@ -111,25 +109,18 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(std::vector<Particle> 
     return resampledParticles;
 }
 
-std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &particles)
+std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Particle> &particles)
 {
     std::vector<Particle> resampledParticles;
     std::vector<double> weights;
-    double totalWeights = 0.0, newWeight = 0.0;
 
-    for (auto &particle : particles)
+    for (const auto &particle : particles)
     {
         weights.push_back(particle.weight);
-        totalWeights += particle.weight;
     }
 
-    // Normiere die Gewichte
-    for (int i = 0; i < particles.size(); i++)
-    {
-        particles[i].weight /= totalWeights;
-        newWeight += particles[i].weight;
-        // ROS_INFO("Particle Weight: %f", particles[i].weight);
-    }
+    double totalWeights = std::accumulate(weights.begin(), weights.end(), 0.0);
+
 
     if (totalWeights == 0)
     {
@@ -137,37 +128,37 @@ std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &p
         return particles;
     }
 
-    if (newWeight < 0.99 || newWeight > 1.01)
+    for(int i = 0; i < weights.size(); i++)
     {
-        ROS_WARN("Sum of Particles Weights: %f", newWeight);
+        weights[i] = weights[i] / totalWeights;
     }
 
-    // Normiere die Gewichte in der weights-Liste
-    for (auto &weight : weights)
-    {
-        weight /= totalWeights;
-    }
+    // for(auto &weight : weights)
+    // {
+    //     ROS_INFO("Weights: %f", weight);
+    // }
+
+    // printHistogram(particles, 20);
 
     std::random_device rd;
     std::mt19937 gen(rd());
 
     int quantityLostParticles = quantityParticles - particles.size();
-
-    ROS_INFO("Quantity Lost Particles: %d", quantityLostParticles);
-
     int numParticles = particles.size() + quantityLostParticles;
-    int numRandomParticles = static_cast<int>(percentage_resample_random_particles * numParticles); // 10% der Partikel zufällig verteilen
+    int numRandomParticles = static_cast<int>(percentage_resample_random_particles * numParticles);
     int numResampledParticles = numParticles - numRandomParticles;
-
+    std::discrete_distribution<> distribution(weights.begin(), weights.end());
+    
     // Resample existing particles
     for (int i = 0; i < numResampledParticles; i++)
     {
-        int index = std::discrete_distribution<int>(weights.begin(), weights.end())(gen);
-        Particle resampledParticle = particles[index];
-        resampledParticle.weight = 1.0 / numParticles;
-        resampledParticles.push_back(resampledParticle);
-        // ROS_INFO("Resampled Particle Pose: %f, %f, %f", resampledParticle.pose.position.x, resampledParticle.pose.position.y, resampledParticle.pose.orientation.z);
+        int index = distribution(gen);
+        resampledParticles.push_back(particles[index]);
+        // ROS_INFO("Resampled Particle x: %f, y: %f, z: %f", resampledParticles[i].pose.position.x, resampledParticles[i].pose.position.y, resampledParticles[i].pose.orientation.z);
     }
+
+
+    // Resample random particles
 
     std::vector<Particle> randomParticles;
     randomParticles.reserve(numRandomParticles);
@@ -189,8 +180,6 @@ std::vector<Particle> ParticleFilter::resampleParticles(std::vector<Particle> &p
         resampledParticles.push_back(particle);
         // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
-
-    printHistogram(resampledParticles, resampledParticles.size()); // 10 bins for the histogram
 
     return resampledParticles;
 }
@@ -242,6 +231,8 @@ void ParticleFilter::printHistogram(const std::vector<Particle> &particles, int 
         }
     }
 
+    // ROS_INFO("Max Weight: %f", maxWeight);
+
     // Bin the weights
     for (const auto &particle : particles)
     {
@@ -262,3 +253,8 @@ void ParticleFilter::printHistogram(const std::vector<Particle> &particles, int 
         std::cout << std::endl;
     }
 }
+
+void ParticleFilter::printWeights(const std::vector<Particle> &particles)
+{
+    
+}   

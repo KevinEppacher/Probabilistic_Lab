@@ -48,8 +48,9 @@ private:
     geometry_msgs::PoseArray convertParticlesToPoseArray(const std::vector<Particle> &particles);
     bool isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map);
     std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid &map);
-    std::vector<Particle> resampleParticles(std::vector<Particle>& particles);
+    std::vector<Particle> resampleParticles(const std::vector<Particle>& particles);
     void printHistogram(const std::vector<Particle> &particles, int numBins);
+    void printWeights(const std::vector<Particle> &particles);
 
 
     Particle particle;

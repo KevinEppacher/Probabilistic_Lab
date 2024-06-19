@@ -49,6 +49,8 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 
     double sumError = 0, error = 0;
 
+    z_max_range = z_t.range_max;
+
     for (int k = 0; k < K; k += step)
     {
         // ROS_INFO("Beam %d", k);
@@ -59,28 +61,22 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 
         error = z_k - z_star;
 
-        double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_t.range_max) + z_rand * p_rand(z_k, z_t.range_max);
-
-        if(p==0)ROS_WARN("p: %f", p);
+        double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_max_range) + z_rand * p_rand(z_k, z_max_range);
 
         if(p != 0 )
         {
             q = q * p;
+            // q = q + p;
+        }
+        else
+        {
+            ROS_WARN("p: %f", p);
         }
 
         sumError += error;
-    // ROS_INFO("error: %f", error); 
-    publisher.publishDouble(error);
+        // ROS_INFO("error: %f", error); 
+        publisher.publishDouble(error);
         
-        // publisher.publishDouble(q);
-        // if( q == 0 )
-        // {
-        //     ROS_WARN("q: %f", q);
-        // }
-        // else
-        // {
-        //     ROS_INFO("q: %f", q);
-        // }
     }
 
     // ROS_WARN("q: %f", q);
@@ -118,9 +114,10 @@ std::vector<Ray> SensorModel::convertScanToRays(const sensor_msgs::LaserScan &z_
 
 double SensorModel::p_hit(double& z_k, double& z_star)
 {
-    if (0 <= z_k && z_k <= z_max)
+    // ROS_INFO("z_k: %f, z_max: %f", z_k, z_max_range);
+    if (0 <= z_k && z_k <= z_max_range)
     {
-        double normalization = numericalIntegration(z_star, z_max, 100);
+        double normalization = numericalIntegration(z_star, z_max_range, 100);
 
         double p = normalDistribution(z_k, z_star) / normalization;
 

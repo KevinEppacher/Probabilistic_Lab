@@ -219,6 +219,6 @@ void Visualizer::Visualizer::clearMarkers()
     // Publish the clear marker
     realRaysPub.publish(clearMarkerArray);
     simRaysPub.publish(clearMarkerArray);
-    ROS_INFO("Cleared all markers");
+    // ROS_INFO("Cleared all markers");
 }
 
