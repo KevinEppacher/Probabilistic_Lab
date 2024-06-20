@@ -64,7 +64,7 @@ namespace Communication
     void Subscriber::cmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
     {
         // Handle the incoming odometry message
-        cmd_vel = *msg;            
+        cmd_vel = *msg;
     }
 
     geometry_msgs::Twist Subscriber::getCmdVel(bool printCmdVel)
@@ -106,14 +106,13 @@ namespace Communication
     {
         ros::Rate loop_rate(1);
 
-        while(ros::ok() && map.data.empty())
+        while (ros::ok() && map.data.empty())
         {
             ROS_WARN("Waiting for map data...");
 
             ros::spinOnce();
 
             loop_rate.sleep();
-
         }
         ROS_INFO("Received map width: %u", map.info.width);
         ROS_INFO("Received map height: %u", map.info.height);
@@ -125,6 +124,44 @@ namespace Communication
         ROS_INFO("Waiting for map data...");
         ROS_INFO("Map status: %d", map.data.empty());
         return map.data.empty();
+    }
+
+    CSVPlotter::CSVPlotter(ros::NodeHandle &nodehandler) : nh(nodehandler)
+    {
+
+    }
+
+    CSVPlotter::CSVPlotter(std::string filepath) : filepath(filepath)
+    {
+
+    }
+
+    CSVPlotter::~CSVPlotter()
+    {
+
+    }
+
+    void CSVPlotter::writeParticlesToCSV(std::vector<Particle>& particles)
+    {
+        std::ofstream file(filepath);
+        file << "x, y, theta, weight \n";
+        if(particles.empty())
+        {
+            ROS_WARN("No Particles to write");
+        }
+
+        if (file.is_open())
+        {
+            for (const auto &particle : particles)
+            {   
+                file << particle.pose.position.x << "," << particle.pose.position.y << "," << tf::getYaw(particle.pose.orientation) << "," << particle.weight << "\n";
+            }
+            file.close();
+        }
+        else
+        {
+            ROS_ERROR("Unable to open file for writing: %s", filepath.c_str());
+        }
     }
 
 } // namespace communication

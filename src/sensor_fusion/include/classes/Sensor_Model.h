@@ -30,8 +30,8 @@ public:
 private:
     double p_hit(double& z_k, double& z_star);
     double p_short(double& z_k, double& z_star);
-    double p_max(double& z_k, float& z_max);
-    double p_rand(double& z_k, float& z_max);
+    double p_max(double& z_k, float& z_max_range);
+    double p_rand(double& z_k, float& z_max_range);
     std::vector<Ray> rayCasting(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map, const sensor_msgs::LaserScan &z_t);
     std::vector<Ray> convertScanToRays(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &pose);
     double normalDistribution(double x, double mean);

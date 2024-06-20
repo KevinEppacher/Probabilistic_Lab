@@ -63,15 +63,17 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 
         double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_max_range) + z_rand * p_rand(z_k, z_max_range);
 
-        if(p != 0 )
-        {
-            q = q * p;
-            // q = q + p;
-        }
-        else
-        {
-            ROS_WARN("p: %f", p);
-        }
+        // if(p != 0 )
+        // {
+        //     q = q * p;
+        //     // q = q + p;
+        // }
+        // else
+        // {
+        //     ROS_WARN("p: %f", p);
+        // }
+
+        q = q * p;
 
         sumError += error;
         // ROS_INFO("error: %f", error); 
@@ -80,8 +82,6 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
     }
 
     // ROS_WARN("q: %f", q);
-
-
 
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
@@ -117,7 +117,7 @@ double SensorModel::p_hit(double& z_k, double& z_star)
     // ROS_INFO("z_k: %f, z_max: %f", z_k, z_max_range);
     if (0 <= z_k && z_k <= z_max_range)
     {
-        double normalization = numericalIntegration(z_star, z_max_range, 100);
+        double normalization = numericalIntegration(z_star, z_max_range, 1000);
 
         double p = normalDistribution(z_k, z_star) / normalization;
 
@@ -185,16 +185,16 @@ double SensorModel::p_short(double& z_k, double& z_star)
 
 
 
-double SensorModel::p_max(double& z_k, float& z_max)
+double SensorModel::p_max(double& z_k, float& z_max_range)
 {
     // (condition) ? (value if_true) : (value if_false)
-    return (z_k == z_max) ? 1.0 : 0.0;
+    return (z_k == z_max_range) ? 1.0 : 0.0;
 }
 
-double SensorModel::p_rand(double& z_k, float& z_max)
+double SensorModel::p_rand(double& z_k, float& z_max_range)
 {
     // Probability of a random measurement
-    return (0 <= z_k <= z_max) ? 1.0 / z_max : 0.0;
+    return (0 <= z_k <= z_max_range) ? 1.0 / z_max_range : 0.0;
 }
 
 std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map, const sensor_msgs::LaserScan &z_t)

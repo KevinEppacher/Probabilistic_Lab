@@ -13,6 +13,9 @@
 #include <random>
 #include <visualization_msgs/Marker.h>
 #include <tf/tf.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include "ros/package.h"
 
 
 //Include Custom Classes
@@ -48,9 +51,11 @@ private:
     geometry_msgs::PoseArray convertParticlesToPoseArray(const std::vector<Particle> &particles);
     bool isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map);
     std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid &map);
+    std::vector<Particle> normalizeParticles(const std::vector<Particle>& particles, std::vector<double>& weights);
     std::vector<Particle> resampleParticles(const std::vector<Particle>& particles);
     void printHistogram(const std::vector<Particle> &particles, int numBins);
     void printWeights(const std::vector<Particle> &particles);
+
 
 
     Particle particle;
@@ -62,6 +67,7 @@ private:
     MotionModel motionModel;
     SensorModel sensorModel;
     nav_msgs::OccupancyGrid map;
+    std::string packageName = "sensor_fusion";
 
     double percentage_resample_random_particles = 0.1;
 

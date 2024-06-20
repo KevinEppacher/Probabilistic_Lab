@@ -20,6 +20,15 @@ RUN sudo usermod --append --groups video $USERNAME
 # Update all packages
 RUN sudo apt update && sudo apt upgrade -y
 
+# Install pip
+RUN sudo apt-get install -y python3-pip
+
+# Install Python libraries
+RUN pip3 install pandas matplotlib
+
+# Install tkinter
+RUN sudo apt-get install -y python3-tk
+
 RUN sudo apt install -y ros-noetic-plotjuggler-ros
 
 RUN sudo apt-get install -y ros-noetic-dwa-local-planner

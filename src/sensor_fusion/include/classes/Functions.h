@@ -10,6 +10,8 @@
 #include <random>
 #include <visualization_msgs/Marker.h>
 #include <tf/tf.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 
 // std::vector<std::pair<float, float>> findFreeCells(const nav_msgs::OccupancyGrid &map)
@@ -30,3 +32,4 @@
 //     }
 //     return free_cells;
 // }
+

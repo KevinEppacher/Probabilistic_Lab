@@ -32,6 +32,7 @@ int main(int argc, char **argv)
         ros::Time start_time = ros::Time::now(); // Beginn des Schleifendurchlaufs
 
         geometry_msgs::Twist motionCommand = subscriber.getCmdVel(false);
+        
         sensor_msgs::LaserScan laserMeasurement = subscriber.getLaser(false);
 
         std::vector<Particle> updatedParticles = particleFilter.estimatePoseWithMCL(particles, motionCommand, laserMeasurement, map);

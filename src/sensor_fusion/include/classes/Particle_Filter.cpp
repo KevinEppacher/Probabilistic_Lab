@@ -114,24 +114,12 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
     std::vector<Particle> resampledParticles;
     std::vector<double> weights;
 
-    for (const auto &particle : particles)
-    {
-        weights.push_back(particle.weight);
-    }
+    std::vector<Particle> normalizedParticles = normalizeParticles(particles, weights);
 
-    double totalWeights = std::accumulate(weights.begin(), weights.end(), 0.0);
+    std::string filepath = ros::package::getPath(packageName);
+    Communication::CSVPlotter csvPlotter(filepath + "/measurements/Particle_Resampling_Histogramm.csv");
 
-
-    if (totalWeights == 0)
-    {
-        ROS_WARN("Total particle weights sum to zero.");
-        return particles;
-    }
-
-    for(int i = 0; i < weights.size(); i++)
-    {
-        weights[i] = weights[i] / totalWeights;
-    }
+    csvPlotter.writeParticlesToCSV(normalizedParticles);
 
     // for(auto &weight : weights)
     // {
@@ -254,7 +242,32 @@ void ParticleFilter::printHistogram(const std::vector<Particle> &particles, int 
     }
 }
 
-void ParticleFilter::printWeights(const std::vector<Particle> &particles)
+
+std::vector<Particle> ParticleFilter::normalizeParticles(const std::vector<Particle>& particles, std::vector<double>& weights)
 {
-    
-}   
+    std::vector<Particle> normalizedParticles = particles;
+
+    // Falls gewünscht, können Sie weights hier nicht erneut füllen, wenn weights bereits gefüllt ist
+    weights.clear(); // Stellen Sie sicher, dass weights leer ist, bevor Sie es füllen
+
+    for (const auto &particle : particles)
+    {
+        weights.push_back(particle.weight);
+    }
+
+    double totalWeights = std::accumulate(weights.begin(), weights.end(), 0.0);
+
+    if (totalWeights == 0)
+    {
+        ROS_WARN("Total particle weights sum to zero.");
+        return particles;
+    }
+
+    for(size_t i = 0; i < weights.size(); i++)
+    {
+        weights[i] = weights[i] / totalWeights;
+        normalizedParticles[i].weight = weights[i];
+    }
+
+    return normalizedParticles;
+}

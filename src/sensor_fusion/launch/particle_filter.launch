@@ -1,11 +1,15 @@
 <launch>
     <!-- Launch the main node -->
     <node name="main" pkg="sensor_fusion" type="main" output="screen" />
-        <rosparam file="$(find sensor_fusion)/param/particle_filter_param/motion_model_params.yaml" command="load"/>
-        <rosparam file="$(find sensor_fusion)/param/particle_filter_param/sensor_model_params.yaml" command="load"/>
-        <rosparam file="$(find sensor_fusion)/param/particle_filter_param/general_params.yaml" command="load"/>
+    <rosparam file="$(find sensor_fusion)/param/particle_filter_param/motion_model_params.yaml" command="load"/>
+    <rosparam file="$(find sensor_fusion)/param/particle_filter_param/sensor_model_params.yaml" command="load"/>
+    <rosparam file="$(find sensor_fusion)/param/particle_filter_param/general_params.yaml" command="load"/>
 
     <!-- Launch the rqt_reconfigure tool -->
     <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" />
 
+    <!-- Launch the plot_histogram node -->
+    <node name="plot_histogram" pkg="sensor_fusion" type="plot_histogram.py" output="screen">
+        <param name="file_path" value="$(find sensor_fusion)/measurements/Particle_Resampling_Histogramm.csv" />
+    </node>
 </launch>

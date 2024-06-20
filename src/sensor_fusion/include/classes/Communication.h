@@ -9,6 +9,13 @@
 #include "nav_msgs/Odometry.h"
 #include "sensor_msgs/LaserScan.h"
 #include "nav_msgs/OccupancyGrid.h"
+#include <fstream>
+#include <tf/tf.h>
+
+
+// Custom classes
+#include "../structs/Particle.h"
+
 
 namespace Communication
 {
@@ -69,5 +76,19 @@ namespace Communication
         nav_msgs::OccupancyGrid map;
     };
 
+    class CSVPlotter
+    {
+    public:
+        CSVPlotter(ros::NodeHandle &nodehandler);
+        CSVPlotter(std::string filepath);
+        ~CSVPlotter();
+        void writeParticlesToCSV(std::vector<Particle>& particles);
+
+    private:
+        ros::NodeHandle nh;
+        std::string filepath;
+    };
+
 }
 #endif // COMMUNICATION_H
+
