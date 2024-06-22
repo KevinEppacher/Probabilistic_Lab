@@ -39,8 +39,7 @@ public:
 
     std::vector<Particle> initializeParticles(const nav_msgs::OccupancyGrid &map);
 
-    std::vector<Particle> estimatePoseWithMCL(std::vector<Particle>& particles,
-                                        const geometry_msgs::Twist& motionCommand,
+    std::vector<Particle> estimatePoseWithMCL(const geometry_msgs::Twist& motionCommand,
                                         const sensor_msgs::LaserScan& sensorMeasurement, 
                                         const nav_msgs::OccupancyGrid& map);
 
@@ -59,6 +58,7 @@ private:
 
 
     Particle particle;
+    std::vector<Particle> particles;
     int quantityParticles;
     ros::NodeHandle nh;
     Communication::Publisher publisher;

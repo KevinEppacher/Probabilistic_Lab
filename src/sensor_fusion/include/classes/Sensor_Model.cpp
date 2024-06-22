@@ -77,7 +77,7 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 
         sumError += error;
         // ROS_INFO("error: %f", error); 
-        publisher.publishDouble(error);
+        // publisher.publishDouble(error);
         
     }
 

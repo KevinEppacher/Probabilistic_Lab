@@ -34,6 +34,7 @@ private:
     double alpha1, alpha2, alpha3, alpha4, alpha5, alpha6;
     double v_hat, w_hat, v, w, gamma_hat, theta, dt;
     mutable std::mt19937 gen;
+    double loopRate;
 
     dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>* server;
     dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>::CallbackType f;

@@ -4,7 +4,11 @@ namespace Communication
 {
 
     // Communication class definitions
-    Communication::Communication(ros::NodeHandle &nodehandler) : nh(nodehandler) {}
+    Communication::Communication(ros::NodeHandle &nodehandler) : nh(nodehandler)
+    {
+
+
+    }
 
     Communication::~Communication() {}
 
@@ -39,14 +43,13 @@ namespace Communication
     Subscriber::Subscriber(ros::NodeHandle &nodehandler) : Communication(nodehandler)
     {
         mapSub = nh.subscribe("map", 1, &Subscriber::mapCallback, this);
-        odomSub = nh.subscribe("odom", 1, &Subscriber::odomCallback, this);
-        cmdVelSub = nh.subscribe("cmd_vel", 1, &Subscriber::cmdVelCallback, this);
+        odomSub = nh.subscribe("odom", 10, &Subscriber::odomCallback, this);
+        cmdVelSub = nh.subscribe("cmd_vel", 10000, &Subscriber::cmdVelCallback, this);
         laserSub = nh.subscribe("scan", 1, &Subscriber::laserCallback, this);
     }
 
     void Subscriber::odomCallback(const nav_msgs::Odometry::ConstPtr &msg)
     {
-        // Handle the incoming odometry message
         odom = *msg;
     }
 

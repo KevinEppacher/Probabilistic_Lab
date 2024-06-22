@@ -19,7 +19,6 @@ void ParticleFilter::getNodehanlder(ros::NodeHandle &nodehandler)
 
 std::vector<Particle> ParticleFilter::initializeParticles(const nav_msgs::OccupancyGrid &map)
 {
-    std::vector<Particle> particles;
     particles.reserve(quantityParticles);
 
     this->map = map;
@@ -69,44 +68,33 @@ geometry_msgs::PoseArray ParticleFilter::convertParticlesToPoseArray(const std::
     return particleArray;
 }
 
-std::vector<Particle> ParticleFilter::estimatePoseWithMCL(std::vector<Particle> &particles, const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const nav_msgs::OccupancyGrid &map)
+std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const nav_msgs::OccupancyGrid &map)
 {
-    std::vector<Particle> updatedParticles;
+    // std::vector<Particle> updatedParticles;
+    // updatedParticles.reserve(particles.size());
 
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
 
-    for (auto &particle : particles)
+    for(int i = 0; i < particles.size(); i++)
     {
-        geometry_msgs::Pose sampledPose = motionModel.sampleMotionModel(motionCommand, particle.pose);
+        particles[i].pose = motionModel.sampleMotionModel(motionCommand, particles[i].pose);
 
-        double weight = sensorModel.beam_range_finder_model(sensorMeasurement, sampledPose, map);
+        poseArrayAfterMotionModel.poses.push_back(particles[i].pose);
 
-        if (isPoseInFreeCell(sampledPose, map))
-        {
-            Particle updatedParticle = particle;
+        particles[i].weight = sensorModel.beam_range_finder_model(sensorMeasurement, particles[i].pose, map);
 
-            updatedParticle.pose = sampledPose;
-
-            updatedParticle.weight = weight;
-
-            updatedParticles.push_back(updatedParticle);
-
-            poseArrayAfterMotionModel.poses.push_back(sampledPose);
-        }
     }
 
-    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
+    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
 
     // Resample particles based on their weights
-    std::vector<Particle> resampledParticles = ParticleFilter::resampleParticles(updatedParticles);
+    particles = ParticleFilter::resampleParticles(particles);
 
-    geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(resampledParticles);
+    geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(particles);
 
-    visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
+    visualizer.publishResampledParticles(resampledParticlesPoseArray, true);
 
-    particles = resampledParticles;
-
-    return resampledParticles;
+    return particles;
 }
 
 std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Particle> &particles)

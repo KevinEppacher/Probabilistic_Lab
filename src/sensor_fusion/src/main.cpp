@@ -35,7 +35,7 @@ int main(int argc, char **argv)
         
         sensor_msgs::LaserScan laserMeasurement = subscriber.getLaser(false);
 
-        std::vector<Particle> updatedParticles = particleFilter.estimatePoseWithMCL(particles, motionCommand, laserMeasurement, map);
+        std::vector<Particle> updatedParticles = particleFilter.estimatePoseWithMCL(motionCommand, laserMeasurement, map);
 
         ROS_INFO("Updated Particles: %lu", updatedParticles.size());
 

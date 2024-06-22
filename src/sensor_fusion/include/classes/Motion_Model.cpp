@@ -8,6 +8,7 @@ MotionModel::MotionModel(ros::NodeHandle &nh) : gen(std::random_device{}())
     nh.getParam("alpha4", alpha4);
     nh.getParam("alpha5", alpha5);
     nh.getParam("alpha6", alpha6);
+    nh.getParam("loop_rate", loopRate);
 
     //     // Initialize dynamic reconfigure server
     server = new dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>(nh.getNamespace() + "/motion_model");
@@ -36,6 +37,8 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     // ROS_INFO(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
 
     dt = getTimeDifference();
+        // ROS_INFO(" Delta t %f", dt);
+
 
     v = motionCommand.linear.x;
     w = motionCommand.angular.z;
@@ -44,10 +47,10 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     // ROS_INFO("w: %f", w);
 
     v_hat = v + sample(alpha1 * std::abs(v) + alpha2 * std::abs(w));
-    // ROS_INFO("v_hat: %f", v_hat);
+    //  ROS_INFO("v_hat: %f", v_hat);
 
     w_hat = w + sample(alpha3 * std::abs(v) + alpha4 * std::abs(w));
-    // ROS_INFO("w_hat: %f", w_hat);
+    //  ROS_INFO("w_hat: %f", w_hat);
 
     gamma_hat = sample(alpha5 * std::abs(v) + alpha6 * std::abs(w));
 
@@ -70,7 +73,7 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     newPose.position.y = newY;  
     newPose.orientation = tf::createQuaternionMsgFromYaw(normalize_angle_positive(theta));
 
-    // ROS_INFO("Sampled Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, tf::getYaw(currentPose.orientation));
+    // ROS_INFO("Sampled Pose: %f, %f, %f", newPose.position.x, newPose.position.y, tf::getYaw(newPose.orientation));
 
     // ROS_WARN(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
 
@@ -85,10 +88,13 @@ double MotionModel::sample(double std_dev)
 
 double MotionModel::getTimeDifference()
 {
-    static ros::Time prevTime = ros::Time::now();
-    ros::Time currentTime = ros::Time::now();
-    double dt = (currentTime - prevTime).toSec();
-    prevTime = currentTime;
+    // static ros::Time prevTime = ros::Time::now();
+    // ros::Time currentTime = ros::Time::now();
+    // double dt = (currentTime - prevTime).toSec();
+    // prevTime = currentTime;
+    // // ROS_INFO(" Delta t %f", dt);
+    dt = 1 / loopRate;
+
     return dt;
 }
 
