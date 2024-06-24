@@ -85,14 +85,14 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::T
 
     }
 
-    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, true);
+    visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
 
     // Resample particles based on their weights
     particles = ParticleFilter::resampleParticles(particles);
 
     geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(particles);
 
-    visualizer.publishResampledParticles(resampledParticlesPoseArray, true);
+    visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
 
     return particles;
 }
@@ -104,10 +104,10 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
 
     std::vector<Particle> normalizedParticles = normalizeParticles(particles, weights);
 
-    std::string filepath = ros::package::getPath(packageName);
-    Communication::CSVPlotter csvPlotter(filepath + "/measurements/Particle_Resampling_Histogramm.csv");
+    // std::string filepath = ros::package::getPath(packageName);
+    // Communication::CSVPlotter csvPlotter(filepath + "/measurements/Particle_Resampling_Histogramm.csv");
+    // csvPlotter.writeParticlesToCSV(normalizedParticles);
 
-    csvPlotter.writeParticlesToCSV(normalizedParticles);
 
     // for(auto &weight : weights)
     // {

@@ -63,23 +63,14 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 
         double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_max_range) + z_rand * p_rand(z_k, z_max_range);
 
-        // if(p != 0 )
-        // {
-        //     q = q * p;
-        //     // q = q + p;
-        // }
-        // else
-        // {
-        //     ROS_WARN("p: %f", p);
-        // }
-
         q = q * p;
 
         sumError += error;
-        // ROS_INFO("error: %f", error); 
-        // publisher.publishDouble(error);
         
     }
+
+    // ROS_INFO("Sum Error: %f", sumError);
+    // publisher.publishDouble(sumError);
 
     // ROS_WARN("q: %f", q);
 
