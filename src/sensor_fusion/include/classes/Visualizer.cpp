@@ -13,6 +13,7 @@ Visualizer::Visualizer::Visualizer(ros::NodeHandle &nodehandler) : nh(nodehandle
     realRaysPub = nh.advertise<visualization_msgs::MarkerArray>("real_laser_rays", 1);
     simRaysPub = nh.advertise<visualization_msgs::MarkerArray>("sim_laser_rays", 1);
     resampledParticlesPub = nh.advertise<geometry_msgs::PoseArray>("resampled_particles", 1);
+    poseWithCovariancePub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("poseWithCovariance", 1);
 
 }
 
@@ -222,3 +223,27 @@ void Visualizer::Visualizer::clearMarkers()
     // ROS_INFO("Cleared all markers");
 }
 
+void Visualizer::Visualizer::publishPoseWithCovariance(const Particle &particle, bool printPoseWithCovariance)
+{
+    geometry_msgs::PoseWithCovarianceStamped poseWithCovarianceStamped;
+    poseWithCovarianceStamped.header.stamp = ros::Time::now();
+    poseWithCovarianceStamped.header.frame_id = "map"; // or the appropriate frame
+
+    poseWithCovarianceStamped.pose.pose = particle.pose;
+
+    std::fill(std::begin(poseWithCovarianceStamped.pose.covariance), std::end(poseWithCovarianceStamped.pose.covariance), 0.0);
+    poseWithCovarianceStamped.pose.covariance[0] = particle.weight;
+
+    // Debug log the size of the message
+    ROS_DEBUG("Publishing PoseWithCovarianceStamped with size: %lu", sizeof(poseWithCovarianceStamped));
+
+    poseWithCovariancePub.publish(poseWithCovarianceStamped);
+
+    if (printPoseWithCovariance)
+    {
+        ROS_INFO("PoseWithCovariance: %f, %f, %f", 
+                 poseWithCovarianceStamped.pose.pose.position.x, 
+                 poseWithCovarianceStamped.pose.pose.position.y, 
+                 tf::getYaw(poseWithCovarianceStamped.pose.pose.orientation));
+    }
+}

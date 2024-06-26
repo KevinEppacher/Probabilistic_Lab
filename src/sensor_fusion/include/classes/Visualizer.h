@@ -15,6 +15,9 @@
 #include <tf/tf.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 
 #include <iostream>
 #include <vector>
@@ -48,6 +51,8 @@ namespace Visualizer
         void publishParticleRays(std::vector<Particle> particles, double percent);
         void clearMarkers();
         void publishResampledParticles(geometry_msgs::PoseArray &poseArray, bool printPoseArray);
+        void publishPoseWithCovariance(const Particle &particle, bool printPoseWithCovariance);
+
 
 
     private:
@@ -61,6 +66,7 @@ namespace Visualizer
         ros::Publisher laserScanPub;
         ros::Publisher odomPub;
         ros::Publisher markerPub;
+        ros::Publisher poseWithCovariancePub;
 
         // Custom Pose Arrays(delete these Methdos if not needed)
         ros::Publisher poseArrayMotionModelPub, initialParticlesPub, resampledParticlesPub;

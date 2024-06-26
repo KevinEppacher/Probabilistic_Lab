@@ -70,9 +70,6 @@ geometry_msgs::PoseArray ParticleFilter::convertParticlesToPoseArray(const std::
 
 std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const nav_msgs::OccupancyGrid &map)
 {
-    // std::vector<Particle> updatedParticles;
-    // updatedParticles.reserve(particles.size());
-
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
 
     for(int i = 0; i < particles.size(); i++)
@@ -89,6 +86,8 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::T
 
     // Resample particles based on their weights
     particles = ParticleFilter::resampleParticles(particles);
+
+    visualizer.publishPoseWithCovariance(particles[0], true);
 
     geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(particles);
 
@@ -107,14 +106,6 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
     std::string filepath = ros::package::getPath(packageName);
     Communication::CSVPlotter csvPlotter(filepath + "/measurements/Particle_Resampling_Histogramm.csv");
     csvPlotter.writeParticlesToCSV(normalizedParticles);
-
-
-    // for(auto &weight : weights)
-    // {
-    //     ROS_INFO("Weights: %f", weight);
-    // }
-
-    // printHistogram(particles, 20);
 
     std::random_device rd;
     std::mt19937 gen(rd());
