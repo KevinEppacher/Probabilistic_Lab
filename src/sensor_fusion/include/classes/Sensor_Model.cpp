@@ -45,7 +45,17 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 
     particle.rays = rayCasting(x_t, map, z_t);
 
-    measuredRay = convertScanToRays(z_t, odomPose);
+    particle.pose = pose;
+
+    measuredRay = convertScanToRays(z_t, particle.pose);
+
+    // for (int i = 0; i < K; i++)
+    // {
+    //     ROS_INFO("Ray %d", i);
+    //     ROS_INFO("Particle Ray %f", particle.rays[i].length);
+    //     ROS_INFO("z_t: %f", z_t.ranges[i]);
+    //     ROS_INFO("Measured Ray %f", measuredRay[i].length);
+    // }
 
     double sumError = 0, error = 0;
 
@@ -86,12 +96,12 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 std::vector<Ray> SensorModel::convertScanToRays(const sensor_msgs::LaserScan &z_t, const geometry_msgs::Pose &pose)
 {
     std::vector<Ray> rays;
+    double poseOrientation = tf::getYaw(pose.orientation);
 
     // Iterate over laser scan angles
     for (size_t i = 0; i < z_t.ranges.size(); ++i)
     {
-        double angle = z_t.angle_min + i * z_t.angle_increment;
-
+        double angle = poseOrientation + z_t.angle_min + i * z_t.angle_increment;
         Ray ray;
         ray.origin = pose.position;
         ray.angle = angle;
@@ -203,8 +213,8 @@ std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const 
     for (int i = 0; i < z_t.ranges.size(); i++)
     {
         // ROS_INFO(" Ray Beam %d", i);
-
-        double angle = z_t.angle_min + i * z_t.angle_increment;
+        double particleAngle = tf::getYaw(pose.orientation);
+        double angle = particleAngle + z_t.angle_min + i * z_t.angle_increment;
 
         ray.angle = angle;
 

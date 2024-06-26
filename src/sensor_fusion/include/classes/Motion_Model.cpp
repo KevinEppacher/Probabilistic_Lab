@@ -88,13 +88,7 @@ double MotionModel::sample(double std_dev)
 
 double MotionModel::getTimeDifference()
 {
-    // static ros::Time prevTime = ros::Time::now();
-    // ros::Time currentTime = ros::Time::now();
-    // double dt = (currentTime - prevTime).toSec();
-    // prevTime = currentTime;
-    // // ROS_INFO(" Delta t %f", dt);
     dt = 1 / loopRate;
-
     return dt;
 }
 

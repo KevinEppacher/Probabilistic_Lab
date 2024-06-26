@@ -104,9 +104,9 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
 
     std::vector<Particle> normalizedParticles = normalizeParticles(particles, weights);
 
-    // std::string filepath = ros::package::getPath(packageName);
-    // Communication::CSVPlotter csvPlotter(filepath + "/measurements/Particle_Resampling_Histogramm.csv");
-    // csvPlotter.writeParticlesToCSV(normalizedParticles);
+    std::string filepath = ros::package::getPath(packageName);
+    Communication::CSVPlotter csvPlotter(filepath + "/measurements/Particle_Resampling_Histogramm.csv");
+    csvPlotter.writeParticlesToCSV(normalizedParticles);
 
 
     // for(auto &weight : weights)

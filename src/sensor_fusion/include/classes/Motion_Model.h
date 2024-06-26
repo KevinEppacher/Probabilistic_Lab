@@ -39,6 +39,8 @@ private:
     dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>* server;
     dynamic_reconfigure::Server<sensor_fusion::MotionModelConfig>::CallbackType f;
 
+    ros::Time prevTime, currentTime;
+
 };
 
 #endif // MOTION_MODEL_H
