@@ -68,6 +68,8 @@ private:
     SensorModel sensorModel;
     nav_msgs::OccupancyGrid map;
     std::string packageName = "sensor_fusion";
+    ros::Time prevTime;
+    ros::Time currentTime;
 
     double percentage_resample_random_particles = 0.1;
 

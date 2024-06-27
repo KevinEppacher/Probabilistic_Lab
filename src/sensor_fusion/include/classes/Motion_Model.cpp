@@ -25,7 +25,7 @@ MotionModel::~MotionModel()
     delete server;
 }
 
-geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose)
+geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCommand, geometry_msgs::Pose prevPose, const double& dt)
 {
     theta = tf::getYaw(prevPose.orientation);
     theta = normalize_angle_positive(theta);
@@ -35,10 +35,6 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     double newX, newY;
     geometry_msgs::Pose newPose;
     // ROS_INFO(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
-
-    dt = getTimeDifference();
-        // ROS_INFO(" Delta t %f", dt);
-
 
     v = motionCommand.linear.x;
     w = motionCommand.angular.z;

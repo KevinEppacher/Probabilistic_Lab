@@ -71,10 +71,12 @@ geometry_msgs::PoseArray ParticleFilter::convertParticlesToPoseArray(const std::
 std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::Twist &motionCommand, const sensor_msgs::LaserScan &sensorMeasurement, const nav_msgs::OccupancyGrid &map)
 {
     geometry_msgs::PoseArray poseArrayAfterMotionModel;
+    currentTime = ros::Time::now();
+    double dt = (currentTime - prevTime).toSec();
 
     for(int i = 0; i < particles.size(); i++)
     {
-        particles[i].pose = motionModel.sampleMotionModel(motionCommand, particles[i].pose);
+        particles[i].pose = motionModel.sampleMotionModel(motionCommand, particles[i].pose, dt);
 
         poseArrayAfterMotionModel.poses.push_back(particles[i].pose);
 
@@ -147,6 +149,8 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
         resampledParticles.push_back(particle);
         // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
+
+    prevTime = currentTime;
 
     return resampledParticles;
 }

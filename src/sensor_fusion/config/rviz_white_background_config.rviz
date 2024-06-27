@@ -5,7 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /PoseWithCovariance1
       Splitter Ratio: 0.5
     Tree Height: 725
   - Class: rviz/Selection
@@ -421,10 +420,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 515.9745483398438
+      Scale: 73.04067993164062
       Target Frame: <Fixed Frame>
-      X: 0.9668706059455872
-      Y: 0.2471020668745041
+      X: 0.8058730959892273
+      Y: 1.9464809894561768
     Saved: ~
 Window Geometry:
   Displays:
