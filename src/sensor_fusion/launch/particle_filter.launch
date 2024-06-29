@@ -12,4 +12,11 @@
     <node name="plot_histogram" pkg="sensor_fusion" type="plot_histogram.py" output="screen">
         <param name="file_path" value="$(find sensor_fusion)/measurements/Particle_Resampling_Histogramm.csv" />
     </node>
+
+    <!-- Launch the move_in_circle node -->
+    <node name="move_in_circle" pkg="sensor_fusion" type="move_in_circle.py"></node>
+
+    <!-- Launch the measure_euklidean_distance node -->
+    <node name="measure_euklidean_distance" pkg="sensor_fusion" type="measure_euklidean_distance.py"></node>
+
 </launch>

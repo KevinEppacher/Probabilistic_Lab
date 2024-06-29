@@ -106,3 +106,23 @@ catkin_install_python(PROGRAMS
   scripts/plot_histogram.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+############################################################
+# CMakelist for move_in_circle node
+############################################################
+
+# Install Python scripts
+catkin_install_python(PROGRAMS
+  scripts/move_in_circle.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+############################################################
+# CMakelist for measure_euklidean_distance node
+############################################################
+
+# Install Python scripts
+catkin_install_python(PROGRAMS
+  scripts/measure_euklidean_distance.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

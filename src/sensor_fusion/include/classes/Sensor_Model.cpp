@@ -222,7 +222,7 @@ std::vector<Ray> SensorModel::rayCasting(const geometry_msgs::Pose &pose, const 
         double y = pose.position.y;
 
         bool hit = false;
-        double max_range = 10;
+        double max_range = 15;
         double range = 0.0;
 
         while (!hit && range < max_range)

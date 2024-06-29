@@ -95,6 +95,8 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::T
 
     visualizer.publishResampledParticles(resampledParticlesPoseArray, false);
 
+    prevTime = currentTime;
+
     return particles;
 }
 
@@ -149,8 +151,6 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
         resampledParticles.push_back(particle);
         // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
-
-    prevTime = currentTime;
 
     return resampledParticles;
 }

@@ -22,8 +22,8 @@ class ParticleFilterPlotter:
         plt.clf()  # Löschen der aktuellen Figur
         plt.hist(self.data["weight"].dropna(), bins=10, edgecolor='black')
         plt.xlabel('Weight Bins')
-        plt.ylabel('Anzahl der Partikel')
-        plt.title('Histogramm der Partikelgewichte')
+        plt.ylabel('Particle Count')
+        plt.title('Histogram of Particle Weights')
         plt.xlim(0, 1)  # Setzen Sie die X-Achse auf den Bereich von 0 bis 1
         plt.draw()
         plt.pause(0.001)  # Kurze Pause, um den Plot zu aktualisieren
