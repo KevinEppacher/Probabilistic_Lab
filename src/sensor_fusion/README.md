@@ -65,10 +65,10 @@ To help you understand what to expect, we've included a GIF and a photo of the P
 
 **GIF: Particle Filter Demo**
 
-![Particle Filter Demo](src/sensor_fusion/docs/Demo_Particle_Filter.gif)
+![Particle Filter Demo](docs/Demo_Particle_Filter.gif)
 
 **Photo: Particle Filter Result**
 
-![Particle Filter Result](src/sensor_fusion/docs/results/PoseArrayMCL_1.png)
+![Particle Filter Result](docs/results/PoseArrayMCL_1.png)
 
 Happy filtering!
