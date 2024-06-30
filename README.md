@@ -60,3 +60,8 @@ This document provides an overview of the particle filter, including its setup, 
 
 ![Particle Filter Demo](src/sensor_fusion/docs/Demo_Particle_Filter_2.gif)
 
+## Scientific paper:
+
+![Paper MCL](src/sensor_fusion/docs/papers/Efficient Monte Carlo Localization for Mobile Robots: Implementation and Evaluation.pdf)
+
+
