@@ -49,47 +49,23 @@ double SensorModel::beam_range_finder_model(const sensor_msgs::LaserScan &scanMe
 
     measuredRay = convertScanToRays(z_t, particle.pose);
 
-    // for (int i = 0; i < K; i++)
-    // {
-    //     ROS_INFO("Ray %d", i);
-    //     ROS_INFO("Particle Ray %f", particle.rays[i].length);
-    //     ROS_INFO("z_t: %f", z_t.ranges[i]);
-    //     ROS_INFO("Measured Ray %f", measuredRay[i].length);
-    // }
-
-    double sumError = 0, error = 0;
-
     z_max_range = z_t.range_max;
 
     for (int k = 0; k < K; k += step)
     {
-        // ROS_INFO("Beam %d", k);
-
         double z_k = measuredRay[k].length;
 
         double z_star = particle.rays[k].length;
 
-        error = z_k - z_star;
-
         double p = z_hit * p_hit(z_k, z_star) + z_short * p_short(z_k, z_star) + z_max * p_max(z_k, z_max_range) + z_rand * p_rand(z_k, z_max_range);
 
         q = q * p;
-
-        sumError += error;
         
     }
-
-    // ROS_INFO("Sum Error: %f", sumError);
-    // publisher.publishDouble(sumError);
-
-    // ROS_WARN("q: %f", q);
 
     viz.publishSimRay(particle.rays, visualizeRaysPercentage);
 
     viz.publishRealRay(measuredRay, visualizeRaysPercentage);
-
-
-    // ROS_INFO("q: %f", q);
 
     return q;
 }
@@ -115,19 +91,11 @@ std::vector<Ray> SensorModel::convertScanToRays(const sensor_msgs::LaserScan &z_
 
 double SensorModel::p_hit(double& z_k, double& z_star)
 {
-    // ROS_INFO("z_k: %f, z_max: %f", z_k, z_max_range);
     if (0 <= z_k && z_k <= z_max_range)
     {
         double normalization = numericalIntegration(z_star, z_max_range, 1000);
 
         double p = normalDistribution(z_k, z_star) / normalization;
-
-        // ROS_INFO("p_hit: %f", p);
-        // ROS_INFO("normalization: %f", normalization);
-        // ROS_INFO("z_k: %f", z_k);
-        // ROS_INFO("z_star: %f", z_star);
-        // ROS_INFO(" normalDistribution(z_k, z_star): %f", normalDistribution(z_k, z_star));
-        // ROS_INFO("               ");
 
         return p;
     }

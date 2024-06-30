@@ -34,19 +34,13 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     double y = prevPose.position.y;
     double newX, newY;
     geometry_msgs::Pose newPose;
-    // ROS_INFO(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
 
     v = motionCommand.linear.x;
     w = motionCommand.angular.z;
 
-    // ROS_INFO("v: %f", v);
-    // ROS_INFO("w: %f", w);
-
     v_hat = v + sample(alpha1 * std::abs(v) + alpha2 * std::abs(w));
-    //  ROS_INFO("v_hat: %f", v_hat);
 
     w_hat = w + sample(alpha3 * std::abs(v) + alpha4 * std::abs(w));
-    //  ROS_INFO("w_hat: %f", w_hat);
 
     gamma_hat = sample(alpha5 * std::abs(v) + alpha6 * std::abs(w));
 
@@ -68,10 +62,6 @@ geometry_msgs::Pose MotionModel::sampleMotionModel(geometry_msgs::Twist motionCo
     newPose.position.x = newX;
     newPose.position.y = newY;  
     newPose.orientation = tf::createQuaternionMsgFromYaw(normalize_angle_positive(theta));
-
-    // ROS_INFO("Sampled Pose: %f, %f, %f", newPose.position.x, newPose.position.y, tf::getYaw(newPose.orientation));
-
-    // ROS_WARN(" Current Pose: %f, %f, %f", currentPose.position.x, currentPose.position.y, theta * 180.0 / M_PI);
 
     return newPose;
 }

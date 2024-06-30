@@ -21,14 +21,14 @@ class ParticleFilterPlotter:
         # Erstellen Sie ein Histogramm für die Gewichtswerte der Partikel
         plt.clf()  # Löschen der aktuellen Figur
         plt.hist(self.data["weight"].dropna(), bins=10, edgecolor='black')
-        plt.xlabel('Weight Bins', fontsize=40)
-        plt.ylabel('Particle Count', fontsize=40)
-        plt.title('Histogram of Particle Weights', fontsize=50)
+        plt.xlabel('Weight Bins', fontsize=20)
+        plt.ylabel('Particle Count', fontsize=20)
+        plt.title('Histogram of Particle Weights', fontsize=25)
         plt.xlim(0, 1)  # Setzen Sie die X-Achse auf den Bereich von 0 bis 1
 
         # Increase font size for tick labels
-        plt.xticks(fontsize=35)
-        plt.yticks(fontsize=35)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=10)
 
         plt.draw()
         plt.pause(0.001)  # Kurze Pause, um den Plot zu aktualisieren

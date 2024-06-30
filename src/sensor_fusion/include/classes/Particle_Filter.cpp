@@ -33,7 +33,6 @@ std::vector<Particle> ParticleFilter::initializeParticles(const nav_msgs::Occupa
 
     std::vector<std::pair<float, float>> free_cells = findFreeCells(map);
 
-    // Erzeugen von Partikeln an zufälligen freien Stellen
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(0, free_cells.size() - 1);
@@ -48,7 +47,6 @@ std::vector<Particle> ParticleFilter::initializeParticles(const nav_msgs::Occupa
         particle.pose.orientation = tf::createQuaternionMsgFromYaw(randomYaw);
         particle.weight = 1.0 / static_cast<double>(quantityParticles);
         particles.push_back(particle);
-        // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
 
     geometry_msgs::PoseArray particleArray = convertParticlesToPoseArray(particles);
@@ -93,10 +91,7 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::T
 
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
 
-    // Resample particles based on their weights
     particles = ParticleFilter::resampleParticles(particles);
-
-    // visualizer.publishPoseWithCovariance(particles[0], true);
 
     geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(particles);
 
@@ -127,23 +122,19 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
     int numResampledParticles = numParticles - numRandomParticles;
     std::discrete_distribution<> distribution(weights.begin(), weights.end());
 
-    // Standardabweichungen für das Rauschen
-    double noise_std_x = 0.1;
-    double noise_std_y = 0.1;
-    double noise_std_theta = 0.05;
+    double noise_std_x = 0.05;
+    double noise_std_y = 0.05;
+    double noise_std_theta = 0.025;
 
-    // Normalverteilungen für das Rauschen
     std::normal_distribution<double> noise_x(0, noise_std_x);
     std::normal_distribution<double> noise_y(0, noise_std_y);
     std::normal_distribution<double> noise_theta(0, noise_std_theta);
 
-    // Resample existing particles
     for (int i = 0; i < numResampledParticles; i++)
     {
         int index = distribution(gen);
         Particle p = particles[index];
 
-        // Rauschen hinzufügen
         p.pose.position.x += noise_x(gen);
         p.pose.position.y += noise_y(gen);
         double yaw = tf::getYaw(p.pose.orientation);
@@ -153,24 +144,20 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
         resampledParticles.push_back(p);
     }
 
-    // Mittelwertbildung der resampleten Posen
     Particle mean_pose = calculateMeanPose(resampledParticles);
 
-    // Publizieren der Mittelwertspose
-    visualizer.publishPoseWithCovariance(mean_pose, true);
+    visualizer.publishPoseWithCovariance(mean_pose, false);
 
-    // Resample random particles
     std::vector<Particle> randomParticles;
     randomParticles.reserve(numRandomParticles);
 
     std::vector<std::pair<float, float>> free_cells = findFreeCells(map);
 
-    // Erzeugen von Partikeln an zufälligen freien Stellen
     std::uniform_int_distribution<> distrib(0, free_cells.size() - 1);
 
     for (int i = 0; i < numRandomParticles; ++i)
     {
-        int cell_index = distrib(gen); // Zufällige Zellenindex
+        int cell_index = distrib(gen);
         Particle particle;
         particle.pose.position.x = free_cells[cell_index].first;
         particle.pose.position.y = free_cells[cell_index].second;
@@ -178,7 +165,6 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
         particle.pose.orientation = tf::createQuaternionMsgFromYaw(randomYaw);
         particle.weight = 1.0 / static_cast<double>(quantityParticles);
         resampledParticles.push_back(particle);
-        // ROS_INFO("Particle Pose: %f, %f, %f", particle.pose.position.x, particle.pose.position.y, particle.pose.orientation.z);
     }
 
     return resampledParticles;

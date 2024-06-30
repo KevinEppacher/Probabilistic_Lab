@@ -1,39 +1,57 @@
-# PRO-LAB
 
-## Getting Started
+# Project Repository Guide
 
-### Installing
+Welcome to the project repository! This guide will help you get started with cloning the package, setting up Docker, understanding what's included in this workspace, and locating the README for the particle filter.
 
-xhost +local:
+## Cloning the Package
 
-Turtlebot Keyboard Control:
-roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+To clone this package, use the following command:
 
-Auswahl des Turtlebots:
-export TURTLEBOT3_MODEL=burger
+```bash
+git clone --recurse-submodules <Repository-URL>
+```
 
-# Git:
+Replace `<Repository-URL>` with the actual URL of the repository. This command ensures that you also clone any submodules associated with the repository.
 
-## Initial Clone:
+## Setting Up Docker
 
-git clone --recurse-submodules <Repository-URL> (git clone --recurse-submodules https://github.com/KevinEppacher/Probabilistic_Lab.git)
+There are two main ways to set up Docker for this project: using Visual Studio Code Remote - Containers extension or using Docker commands directly.
 
-git submodule init
+### Using VS Code Remote - Containers
 
-git submodule update
+1. Ensure you have Docker installed and running on your system.
+2. Install Visual Studio Code and the Remote - Containers extension.
+3. Open the project folder in VS Code.
+4. Use the command palette (Ctrl+Shift+P or Cmd+Shift+P on macOS) and select "Remote-Containers: Reopen in Container". This will build and start the Docker container based on the configuration found in the project.
 
-## Commit and Push:
+### Using Docker Commands
 
-git add .
+If you prefer using Docker commands directly, follow these steps:
 
-git commit -m "Was geändert wurde"
+1. Build the Docker image:
+    ```bash
+    docker build -t project-image .
+    ```
+2. Run the Docker container:
+    ```bash
+    docker run -d --name project-container project-image
+    ```
 
-git push
+Replace `project-image` with a name for your Docker image and `project-container` with a name for your Docker container.
 
-git checkout -b particle_filter
+## Workspace Contents
 
-git push -u origin particle_filter
+This workspace includes:
 
-Terminal Commands:
+- Source code for the main project.
+- A Dockerfile for setting up the development environment.
+- Submodules for any dependencies or related projects.
+- Documentation and guides, including this README.
 
-roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+## Particle Filter README
+
+For detailed information about the particle filter implementation, please refer to the README located at:
+
+`/src/particle_filter/README.md`
+
+This document provides an overview of the particle filter, including its setup, configuration, and usage instructions.
