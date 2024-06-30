@@ -65,7 +65,7 @@ To help you understand what to expect, we've included a GIF and a photo of the P
 
 **GIF: Particle Filter Demo**
 
-![Particle Filter Demo](docs/Demo_Particle_Filter.gif)
+![Particle Filter Demo](docs/Demo_Video_2.mp4)
 
 **Photo: Particle Filter Result**
 
