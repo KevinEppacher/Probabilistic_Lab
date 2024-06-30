@@ -49,6 +49,7 @@ include_directories(
 generate_dynamic_reconfigure_options(
   cfg/Sensor_Model.cfg
   cfg/Motion_Model.cfg
+  cfg/Particle_Filter.cfg
 )
 
 # Declare catkin package
@@ -124,5 +125,15 @@ catkin_install_python(PROGRAMS
 # Install Python scripts
 catkin_install_python(PROGRAMS
   scripts/measure_euklidean_distance.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+############################################################
+# CMakelist for pose_plotter node
+############################################################
+
+# Install Python scripts
+catkin_install_python(PROGRAMS
+  scripts/pose_plotter.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -30,6 +30,12 @@
 #include "../structs/Particle.h"
 #include "../structs/Ray.h"
 
+// Dynamic Reconfigure
+#include <dynamic_reconfigure/server.h>
+#include <mutex>
+
+// Dynamic Reconfigure Motion Model Parameters
+#include <sensor_fusion/ParticleFilterConfig.h>
 
 class ParticleFilter 
 {
@@ -54,7 +60,8 @@ private:
     std::vector<Particle> resampleParticles(const std::vector<Particle>& particles);
     void printHistogram(const std::vector<Particle> &particles, int numBins);
     void printWeights(const std::vector<Particle> &particles);
-
+    void configCallback(sensor_fusion::ParticleFilterConfig &config, uint32_t level);
+    Particle calculateMeanPose(const std::vector<Particle>& particles);
 
 
     Particle particle;
@@ -74,6 +81,9 @@ private:
     double percentage_resample_random_particles = 0.1;
 
     float randomOrientation(std::mt19937 &gen);
+
+    dynamic_reconfigure::Server<sensor_fusion::ParticleFilterConfig>* server;
+    dynamic_reconfigure::Server<sensor_fusion::ParticleFilterConfig>::CallbackType f;
 
 };
 

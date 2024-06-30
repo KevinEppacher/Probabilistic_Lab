@@ -201,7 +201,7 @@ Visualization Manager:
       Axes Radius: 0.009999999776482582
       Class: rviz/PoseArray
       Color: 5; 101; 255
-      Enabled: true
+      Enabled: false
       Head Length: 0.07000000029802322
       Head Radius: 0.029999999329447746
       Name: PoseArray
@@ -211,24 +211,24 @@ Visualization Manager:
       Shape: Arrow (Flat)
       Topic: /poseArrayMotionModel
       Unreliable: false
-      Value: true
+      Value: false
     - Alpha: 1
       Arrow Length: 0.30000001192092896
       Axes Length: 0.30000001192092896
       Axes Radius: 0.009999999776482582
       Class: rviz/PoseArray
       Color: 255; 0; 0
-      Enabled: false
+      Enabled: true
       Head Length: 0.07000000029802322
       Head Radius: 0.029999999329447746
       Name: PoseArray
       Queue Size: 10
       Shaft Length: 0.23000000417232513
       Shaft Radius: 0.009999999776482582
-      Shape: Arrow (3D)
+      Shape: Arrow (Flat)
       Topic: /resampled_particles
       Unreliable: false
-      Value: false
+      Value: true
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
@@ -337,21 +337,21 @@ Visualization Manager:
       Update Interval: 0
       Value: false
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /real_laser_rays
       Name: MarkerArray
       Namespaces:
-        {}
+        rays: true
       Queue Size: 1
-      Value: false
+      Value: true
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /sim_laser_rays
       Name: MarkerArray
       Namespaces:
-        {}
+        rays: true
       Queue Size: 1
-      Value: false
+      Value: true
     - Alpha: 1
       Axes Length: 1
       Axes Radius: 0.10000000149011612
@@ -420,10 +420,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 73.04067993164062
+      Scale: 112.75552368164062
       Target Frame: <Fixed Frame>
-      X: 0.8058730959892273
-      Y: 1.9464809894561768
+      X: -2.2711846828460693
+      Y: 1.5389294624328613
     Saved: ~
 Window Geometry:
   Displays:

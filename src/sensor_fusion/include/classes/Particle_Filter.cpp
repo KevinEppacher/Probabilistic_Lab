@@ -8,6 +8,14 @@ ParticleFilter::ParticleFilter(ros::NodeHandle &nodehandler, int quantityParticl
                                                                                       sensorModel(nh)
 {
     nh.getParam("percentage_resample_random_particles", percentage_resample_random_particles);
+
+    nh.getParam("num_particles", quantityParticles);
+
+    server = new dynamic_reconfigure::Server<sensor_fusion::ParticleFilterConfig>(nh.getNamespace() + "/particle_filter");
+
+    f = boost::bind(&ParticleFilter::configCallback, this, _1, _2);
+
+    server->setCallback(f);
 }
 
 ParticleFilter::~ParticleFilter() {}
@@ -74,14 +82,13 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::T
     currentTime = ros::Time::now();
     double dt = (currentTime - prevTime).toSec();
 
-    for(int i = 0; i < particles.size(); i++)
+    for (int i = 0; i < particles.size(); i++)
     {
         particles[i].pose = motionModel.sampleMotionModel(motionCommand, particles[i].pose, dt);
 
         poseArrayAfterMotionModel.poses.push_back(particles[i].pose);
 
         particles[i].weight = sensorModel.beam_range_finder_model(sensorMeasurement, particles[i].pose, map);
-
     }
 
     visualizer.publishPoseArrayFromMotionModel(poseArrayAfterMotionModel, false);
@@ -89,7 +96,7 @@ std::vector<Particle> ParticleFilter::estimatePoseWithMCL(const geometry_msgs::T
     // Resample particles based on their weights
     particles = ParticleFilter::resampleParticles(particles);
 
-    visualizer.publishPoseWithCovariance(particles[0], true);
+    // visualizer.publishPoseWithCovariance(particles[0], true);
 
     geometry_msgs::PoseArray resampledParticlesPoseArray = convertParticlesToPoseArray(particles);
 
@@ -119,18 +126,40 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
     int numRandomParticles = static_cast<int>(percentage_resample_random_particles * numParticles);
     int numResampledParticles = numParticles - numRandomParticles;
     std::discrete_distribution<> distribution(weights.begin(), weights.end());
-    
+
+    // Standardabweichungen für das Rauschen
+    double noise_std_x = 0.1;
+    double noise_std_y = 0.1;
+    double noise_std_theta = 0.05;
+
+    // Normalverteilungen für das Rauschen
+    std::normal_distribution<double> noise_x(0, noise_std_x);
+    std::normal_distribution<double> noise_y(0, noise_std_y);
+    std::normal_distribution<double> noise_theta(0, noise_std_theta);
+
     // Resample existing particles
     for (int i = 0; i < numResampledParticles; i++)
     {
         int index = distribution(gen);
-        resampledParticles.push_back(particles[index]);
-        // ROS_INFO("Resampled Particle x: %f, y: %f, z: %f", resampledParticles[i].pose.position.x, resampledParticles[i].pose.position.y, resampledParticles[i].pose.orientation.z);
+        Particle p = particles[index];
+
+        // Rauschen hinzufügen
+        p.pose.position.x += noise_x(gen);
+        p.pose.position.y += noise_y(gen);
+        double yaw = tf::getYaw(p.pose.orientation);
+        yaw += noise_theta(gen);
+        p.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
+
+        resampledParticles.push_back(p);
     }
 
+    // Mittelwertbildung der resampleten Posen
+    Particle mean_pose = calculateMeanPose(resampledParticles);
+
+    // Publizieren der Mittelwertspose
+    visualizer.publishPoseWithCovariance(mean_pose, true);
 
     // Resample random particles
-
     std::vector<Particle> randomParticles;
     randomParticles.reserve(numRandomParticles);
 
@@ -153,6 +182,32 @@ std::vector<Particle> ParticleFilter::resampleParticles(const std::vector<Partic
     }
 
     return resampledParticles;
+}
+
+Particle ParticleFilter::calculateMeanPose(const std::vector<Particle> &particles)
+{
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    double sum_yaw = 0.0;
+    int numParticles = particles.size();
+
+    for (const auto &p : particles)
+    {
+        sum_x += p.pose.position.x;
+        sum_y += p.pose.position.y;
+        sum_yaw += tf::getYaw(p.pose.orientation);
+    }
+
+    double mean_x = sum_x / numParticles;
+    double mean_y = sum_y / numParticles;
+    double mean_yaw = sum_yaw / numParticles;
+
+    Particle mean;
+    mean.pose.position.x = mean_x;
+    mean.pose.position.y = mean_y;
+    mean.pose.orientation = tf::createQuaternionMsgFromYaw(mean_yaw);
+
+    return mean;
 }
 
 bool ParticleFilter::isPoseInFreeCell(const geometry_msgs::Pose &pose, const nav_msgs::OccupancyGrid &map)
@@ -225,8 +280,7 @@ void ParticleFilter::printHistogram(const std::vector<Particle> &particles, int 
     }
 }
 
-
-std::vector<Particle> ParticleFilter::normalizeParticles(const std::vector<Particle>& particles, std::vector<double>& weights)
+std::vector<Particle> ParticleFilter::normalizeParticles(const std::vector<Particle> &particles, std::vector<double> &weights)
 {
     std::vector<Particle> normalizedParticles = particles;
 
@@ -246,11 +300,29 @@ std::vector<Particle> ParticleFilter::normalizeParticles(const std::vector<Parti
         return particles;
     }
 
-    for(size_t i = 0; i < weights.size(); i++)
+    for (size_t i = 0; i < weights.size(); i++)
     {
         weights[i] = weights[i] / totalWeights;
         normalizedParticles[i].weight = weights[i];
     }
 
     return normalizedParticles;
+}
+
+void ParticleFilter::configCallback(sensor_fusion::ParticleFilterConfig &config, uint32_t level)
+{
+    percentage_resample_random_particles = config.percentage_resample_random_particles;
+    quantityParticles = config.num_particles;
+
+    ROS_INFO("Reconfigure Request: percentage_resample_random_particles=%f, num_particles=%d",
+             percentage_resample_random_particles, quantityParticles);
+    // alpha1 = config.alpha1;
+    // alpha2 = config.alpha2;
+    // alpha3 = config.alpha3;
+    // alpha3 = config.alpha4;
+    // alpha5 = config.alpha5;
+    // alpha6 = config.alpha6;
+
+    // ROS_INFO("Reconfigure Request: alpha1=%f, alpha2=%f, alpha3=%f, alpha4=%f, alpha5=%f, alpha6=%f",
+    //          alpha1, alpha2, alpha3, alpha4, alpha5, alpha6);
 }
