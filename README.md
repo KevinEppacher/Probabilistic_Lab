@@ -58,5 +58,5 @@ This document provides an overview of the particle filter, including its setup, 
 
 ## Teaser
 
-![Particle Filter Demo](src/sensor_fusion/docs/Demo_Particle_Filter.gif)
+![Particle Filter Demo](src/sensor_fusion/docs/Demo_Particle_Filter_2.gif)
 
