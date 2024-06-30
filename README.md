@@ -55,3 +55,8 @@ For detailed information about the particle filter implementation, please refer 
 `/src/particle_filter/README.md`
 
 This document provides an overview of the particle filter, including its setup, configuration, and usage instructions.
+
+## Teaser
+
+![Particle Filter Demo](src/sensor_fusion/docs/Demo_Particle_Filter.gif)
+
