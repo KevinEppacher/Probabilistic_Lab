@@ -62,6 +62,5 @@ This document provides an overview of the particle filter, including its setup, 
 
 ## Scientific paper:
 
-![Paper MCL](src/sensor_fusion/docs/papers/Efficient Monte Carlo Localization for Mobile Robots: Implementation and Evaluation.pdf)
-
+[Efficient Monte Carlo Localization for Mobile Robots: Implementation and Evaluation](src/sensor_fusion/docs/papers/Efficient%20Monte%20Carlo%20Localization%20for%20Mobile%20Robots:%20Implementation%20and%20Evaluation.pdf)
 
