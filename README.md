@@ -1,74 +1,57 @@
 
-# Particle Filter Startup Guide
+# Project Repository Guide
 
-This README provides instructions on how to start the Particle Filter, including the necessary steps to prepare your environment, launch the simulation and the Particle Filter itself, and optional steps to visualize the results. Additionally, you'll find information on where to find the source code and parameters, as well as visual aids to help you understand the expected outcomes.
+Welcome to the project repository! This guide will help you get started with cloning the package, setting up Docker, understanding what's included in this workspace, and locating the README for the particle filter.
 
-## Preparing Your Environment
+## Cloning the Package
 
-Before running any commands, ensure that each new terminal session is properly set up by sourcing the ROS environment setup file:
-
-```bash
-source devel/setup.bash
-```
-
-## Steps to Run the Particle Filter
-
-### 1. Start the Simulation
-
-To begin, start the simulation environment. This can be done with the following command:
+To clone this package, use the following command:
 
 ```bash
-roslaunch sensor_fusion run_simulation.launch model:=burger
+git clone --recurse-submodules <Repository-URL>
 ```
 
-This command launches the simulation with the burger model. You can replace `burger` with another model name if your setup requires it.
+Replace `<Repository-URL>` with the actual URL of the repository. This command ensures that you also clone any submodules associated with the repository.
 
-### 2. Start the Particle Filter
+## Setting Up Docker
 
-Once the simulation is up and running, you can start the Particle Filter with:
+There are two main ways to set up Docker for this project: using Visual Studio Code Remote - Containers extension or using Docker commands directly.
 
-```bash
-roslaunch sensor_fusion particle_filter.launch
-```
+### Using VS Code Remote - Containers
 
-This command initializes the Particle Filter and begins processing the data from the simulation.
+1. Ensure you have Docker installed and running on your system.
+2. Install Visual Studio Code and the Remote - Containers extension.
+3. Open the project folder in VS Code.
+4. Use the command palette (Ctrl+Shift+P or Cmd+Shift+P on macOS) and select "Remote-Containers: Reopen in Container". This will build and start the Docker container based on the configuration found in the project.
 
-### Optional: Start the Plot
+### Using Docker Commands
 
-For visualizing the pose estimation in real-time, you can start a plot with:
+If you prefer using Docker commands directly, follow these steps:
 
-```bash
-rosrun sensor_fusion pose_plotter.py
-```
+1. Build the Docker image:
+    ```bash
+    docker build -t project-image .
+    ```
+2. Run the Docker container:
+    ```bash
+    docker run -d --name project-container project-image
+    ```
 
-This step is optional but recommended for a better understanding of how the Particle Filter performs.
+Replace `project-image` with a name for your Docker image and `project-container` with a name for your Docker container.
 
-## Parameters and Source Code
+## Workspace Contents
 
-### Parameters
+This workspace includes:
 
-The Particle Filter and simulation can be customized through various parameters. These parameters can be found and adjusted in the launch files located in:
+- Source code for the main project.
+- A Dockerfile for setting up the development environment.
+- Submodules for any dependencies or related projects.
+- Documentation and guides, including this README.
 
-`sensor_fusion/launch/`
+## Particle Filter README
 
-### Source Code
+For detailed information about the particle filter implementation, please refer to the README located at:
 
-The core source code for the Particle Filter is located in:
+`/src/particle_filter/README.md`
 
-`sensor_fusion/include/classes`
-
-Here, you can explore the implementation details and potentially adjust the Particle Filter's behavior.
-
-## Visual Aids
-
-To help you understand what to expect, we've included a GIF and a photo of the Particle Filter in action:
-
-**GIF: Particle Filter Demo**
-
-![Particle Filter Demo](src/sensor_fusion/docs/Demo_Particle_Filter.gif)
-
-**Photo: Particle Filter Result**
-
-![Particle Filter Result](src/sensor_fusion/docs/results/PoseArrayMCL_1.png)
-
-Happy filtering!
+This document provides an overview of the particle filter, including its setup, configuration, and usage instructions.
